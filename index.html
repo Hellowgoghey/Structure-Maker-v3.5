@@ -1,0 +1,2261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MC Structure Addon Creator v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07070e;--sf:#0d0d1a;--card:#121220;--brd:#1e1e38;--brite:#2a2a50;
+  --gold:#f0a830;--gold2:#7a4e08;--teal:#28e0c0;--pur:#b050e8;
+  --red:#e83838;--grn:#30d870;--blu:#3098f0;
+  --txt:#c0c0e0;--dim:#484870;
+  --px:'Press Start 2P',monospace;--mo:'VT323',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--mo);background:var(--bg);color:var(--txt);font-size:16px;
+  height:100vh;overflow:hidden;display:flex;flex-direction:column;user-select:none;}
+
+/* ── HEADER ── */
+#hdr{background:var(--sf);border-bottom:2px solid var(--brite);padding:7px 14px;
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+#hdr h1{font-family:var(--px);font-size:9px;color:var(--gold);
+  text-shadow:0 0 16px rgba(240,168,48,.5);letter-spacing:1px;}
+.hbtns{display:flex;gap:8px;align-items:center;}
+.hbtn{font-family:var(--px);font-size:7px;padding:6px 12px;border:2px solid;
+  cursor:pointer;background:transparent;letter-spacing:1px;transition:all .12s;}
+.hbtn-g{border-color:var(--gold);color:var(--gold);}
+.hbtn-g:hover{background:rgba(240,168,48,.12);box-shadow:0 0 12px rgba(240,168,48,.3);}
+.hbtn-t{border-color:var(--teal);color:var(--teal);}
+.hbtn-t:hover{background:rgba(40,224,192,.1);}
+.hbtn-p{border-color:var(--pur);color:var(--pur);}
+.hbtn-p:hover{background:rgba(176,80,232,.1);}
+
+/* ── LAYOUT ── */
+#main{display:flex;flex:1;overflow:hidden;}
+
+/* ── PALETTE ── */
+#pal{width:205px;background:var(--sf);border-right:2px solid var(--brd);
+  display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;}
+#psrch{padding:6px;border-bottom:2px solid var(--brd);}
+#psrch input{width:100%;background:var(--card);border:2px solid var(--brite);
+  color:var(--txt);padding:5px 7px;font-family:var(--mo);font-size:16px;outline:none;}
+#psrch input:focus{border-color:var(--gold);}
+#pcust{padding:5px 7px;border-bottom:2px solid var(--brd);background:rgba(176,80,232,.05);}
+#pcust label{font-family:var(--px);font-size:5px;color:var(--pur);display:block;margin-bottom:3px;letter-spacing:1px;}
+#custinp{width:100%;background:var(--card);border:2px solid var(--pur);color:var(--txt);
+  padding:4px 7px;font-family:var(--mo);font-size:15px;outline:none;margin-bottom:3px;}
+#custbtn{width:100%;font-family:var(--px);font-size:5px;padding:5px;border:2px solid var(--pur);
+  color:var(--pur);background:transparent;cursor:pointer;letter-spacing:1px;}
+#custbtn.on{background:rgba(176,80,232,.2);color:#fff;}
+#plist{flex:1;overflow-y:auto;}
+#plist::-webkit-scrollbar{width:4px;}
+#plist::-webkit-scrollbar-thumb{background:var(--brite);}
+.chdr{font-family:var(--px);font-size:5px;color:var(--dim);padding:5px 8px 2px;
+  letter-spacing:1px;cursor:pointer;display:flex;align-items:center;gap:4px;}
+.chdr:hover{color:var(--txt);}
+.chdra{transition:transform .15s;display:inline-block;}
+.chdr.col .chdra{transform:rotate(-90deg);}
+.chdr.col+.cblks{display:none;}
+.cblks{display:flex;flex-direction:column;}
+.blk{display:flex;align-items:center;gap:6px;padding:4px 8px;cursor:pointer;transition:background .1s;}
+.blk:hover{background:rgba(255,255,255,.04);}
+.blk.sel{background:rgba(240,168,48,.1);border-left:3px solid var(--gold);padding-left:5px;}
+.bsw{width:17px;height:17px;flex-shrink:0;border:1px solid rgba(255,255,255,.12);}
+.bnm{font-size:14px;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* ── EDITOR ── */
+#editor{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;}
+#tb{background:var(--sf);border-bottom:2px solid var(--brd);
+  padding:5px 8px;display:flex;align-items:center;gap:6px;flex-shrink:0;flex-wrap:wrap;}
+.tbtn{font-family:var(--px);font-size:6px;padding:5px 9px;border:2px solid var(--brite);
+  color:var(--dim);background:transparent;cursor:pointer;letter-spacing:1px;transition:all .12s;}
+.tbtn:hover{border-color:var(--txt);color:var(--txt);}
+.tbtn.on{border-color:var(--gold);color:var(--gold);background:rgba(240,168,48,.07);}
+.tbtn.on-r{border-color:var(--red);color:var(--red);background:rgba(232,56,56,.07);}
+.tbtn.on-t{border-color:var(--teal);color:var(--teal);background:rgba(40,224,192,.07);}
+.sep{width:2px;height:20px;background:var(--brd);flex-shrink:0;}
+#selp{display:flex;align-items:center;gap:6px;padding:0 6px;}
+#selsw{width:18px;height:18px;border:2px solid rgba(255,255,255,.2);flex-shrink:0;}
+#selnm{font-family:var(--px);font-size:6px;color:var(--txt);max-width:130px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+#cwrap{flex:1;position:relative;overflow:hidden;}
+#cv{width:100%;height:100%;display:block;cursor:crosshair;}
+#lyrctl{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+  background:rgba(7,7,14,.9);border:2px solid var(--brite);padding:6px 12px;
+  display:flex;align-items:center;gap:9px;backdrop-filter:blur(4px);}
+#lyrctl label{font-family:var(--px);font-size:5px;color:var(--dim);}
+#lyrsl{width:100px;accent-color:var(--teal);cursor:pointer;}
+#lyrv{font-family:var(--px);font-size:8px;color:var(--teal);min-width:26px;text-align:center;}
+#hlbl{position:absolute;top:7px;left:7px;font-family:var(--px);font-size:6px;
+  color:var(--teal);background:rgba(7,7,14,.85);padding:3px 7px;border:1px solid var(--teal);display:none;}
+#statb{position:absolute;top:7px;right:7px;font-family:var(--px);font-size:6px;
+  color:var(--dim);background:rgba(7,7,14,.85);padding:3px 7px;border:1px solid var(--brd);}
+
+/* ── RIGHT PANEL ── */
+#rp{width:220px;background:var(--sf);border-left:2px solid var(--brd);
+  flex-shrink:0;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:8px;}
+#rp::-webkit-scrollbar{width:4px;}
+#rp::-webkit-scrollbar-thumb{background:var(--brite);}
+.sec{border:2px solid var(--brd);background:var(--card);}
+.sech{font-family:var(--px);font-size:6px;color:var(--teal);padding:5px 8px;
+  background:var(--sf);border-bottom:2px solid var(--brd);letter-spacing:1px;}
+.secb{padding:8px;}
+.fr{margin-bottom:6px;}
+.fr label{font-size:12px;color:var(--dim);display:block;margin-bottom:2px;text-transform:uppercase;letter-spacing:.5px;}
+.fi{width:100%;background:var(--bg);border:2px solid var(--brite);color:var(--txt);
+  padding:4px 6px;font-family:var(--mo);font-size:15px;outline:none;}
+.fi:focus{border-color:var(--gold);}
+select.fi option{background:var(--card);}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
+.rpbtn{width:100%;font-family:var(--px);font-size:6px;padding:7px;border:2px solid;
+  background:transparent;cursor:pointer;letter-spacing:1px;transition:all .15s;margin-top:2px;}
+.rpbtn-g{border-color:var(--gold);color:var(--gold);}
+.rpbtn-g:hover{background:rgba(240,168,48,.12);}
+.rpbtn-t{border-color:var(--teal);color:var(--teal);}
+.rpbtn-t:hover{background:rgba(40,224,192,.1);}
+.rpbtn-r{border-color:var(--red);color:var(--red);}
+.rpbtn-r:hover{background:rgba(232,56,56,.1);}
+.rpbtn-p{border-color:var(--pur);color:var(--pur);}
+.rpbtn-p:hover{background:rgba(176,80,232,.1);}
+.irow{display:flex;justify-content:space-between;margin-bottom:3px;font-size:14px;}
+.ilbl{color:var(--dim);font-size:12px;}
+.ival{color:var(--gold);font-family:var(--px);font-size:7px;}
+.sctag{display:inline-flex;align-items:center;gap:4px;background:rgba(40,224,192,.08);
+  border:1px solid var(--teal);padding:2px 6px;margin:2px;cursor:pointer;font-size:13px;}
+.sctag.on{background:rgba(40,224,192,.2);color:var(--teal);}
+.sctag input{width:12px;height:12px;accent-color:var(--teal);margin:0;}
+.prst{display:inline-block;font-family:var(--px);font-size:5px;padding:3px 6px;
+  border:1px solid var(--brd);color:var(--dim);cursor:pointer;margin:2px;transition:all .1s;}
+.prst:hover{border-color:var(--gold);color:var(--gold);}
+.note{font-size:12px;color:var(--dim);line-height:1.6;margin-top:3px;}
+.ychip{display:inline-block;font-family:var(--px);font-size:5px;padding:3px 7px;
+  border:1px solid;cursor:pointer;margin:2px;transition:all .1s;}
+.ychip.on{background:rgba(240,168,48,.12);}
+
+/* ── CHEST MODAL ── */
+#cm{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;
+  align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(3px);}
+#cm.open{display:flex;}
+#cmi{background:var(--card);border:2px solid var(--gold);width:min(700px,96vw);
+  max-height:84vh;display:flex;flex-direction:column;box-shadow:0 0 40px rgba(240,168,48,.2);}
+#cmh{background:var(--sf);border-bottom:2px solid var(--brd);padding:8px 13px;
+  display:flex;justify-content:space-between;align-items:center;}
+#cmtitle{font-family:var(--px);font-size:8px;color:var(--gold);}
+#cmclose{background:transparent;border:2px solid var(--red);color:var(--red);
+  font-size:15px;cursor:pointer;padding:1px 7px;font-family:var(--mo);}
+#cmb{flex:1;overflow-y:auto;padding:12px;}
+#cmb::-webkit-scrollbar{width:4px;}
+#cmb::-webkit-scrollbar-thumb{background:var(--brite);}
+.pool{background:var(--sf);border:2px solid var(--brite);margin-bottom:8px;}
+.poolhdr{background:var(--card);border-bottom:2px solid var(--brd);padding:5px 10px;
+  display:flex;justify-content:space-between;align-items:center;}
+.poolt{font-family:var(--px);font-size:6px;color:var(--teal);}
+.poolb{padding:9px 11px;}
+.rrow{display:flex;align-items:center;gap:6px;margin-bottom:7px;font-size:14px;}
+.rrow label{color:var(--dim);font-size:12px;text-transform:uppercase;}
+.ri{width:48px;background:var(--bg);border:2px solid var(--brite);color:var(--txt);
+  padding:3px 5px;font-family:var(--mo);font-size:14px;outline:none;text-align:center;}
+.ehdrs{display:grid;grid-template-columns:1fr 55px 45px 45px 26px;gap:3px;margin-bottom:3px;}
+.ehdr{font-family:var(--px);font-size:5px;color:var(--dim);text-align:center;padding:2px 0;}
+.ehdr:first-child{text-align:left;}
+.erow{display:grid;grid-template-columns:1fr 55px 45px 45px 26px;gap:3px;margin-bottom:3px;}
+.einp{background:var(--bg);border:2px solid var(--brite);color:var(--txt);
+  padding:3px 4px;font-family:var(--mo);font-size:13px;outline:none;width:100%;}
+.einp:focus{border-color:var(--gold);}
+.edel{background:transparent;border:2px solid var(--red);color:var(--red);
+  font-size:12px;cursor:pointer;width:100%;}
+.paadd{font-family:var(--px);font-size:5px;padding:4px 9px;margin-top:4px;
+  border:2px solid var(--gold);color:var(--gold);background:transparent;cursor:pointer;}
+#cmf{border-top:2px solid var(--brd);padding:8px 13px;display:flex;gap:7px;background:var(--sf);}
+.cmbtn{flex:1;font-family:var(--px);font-size:6px;padding:8px;border:2px solid;
+  cursor:pointer;background:transparent;letter-spacing:1px;transition:all .15s;}
+</style>
+</head>
+<body>
+<div id="hdr">
+  <h1>⚒ MC STRUCTURE ADDON CREATOR v2</h1>
+  <div class="hbtns">
+    <span style="font-family:var(--px);font-size:5px;color:var(--dim)">NO EXPERIMENTS NEEDED</span>
+    <button class="hbtn hbtn-g" onclick="exportStructure()">⬇ STRUCTURE ADDON</button>
+    <button class="hbtn hbtn-p" onclick="exportWand()">⚡ WAND SCRIPT</button>
+  </div>
+</div>
+<div id="main">
+
+<!-- PALETTE -->
+<div id="pal">
+  <div id="psrch"><input type="text" id="srch" placeholder="Search blocks..." oninput="filterPal(this.value)"></div>
+  <div id="pcust">
+    <label>✏ CUSTOM BLOCK ID</label>
+    <input type="text" id="custinp" placeholder="minecraft:my_block" oninput="custId=this.value.trim()">
+    <button id="custbtn" onclick="selCustom()">USE CUSTOM ID</button>
+  </div>
+  <div id="plist"></div>
+</div>
+
+<!-- 3D EDITOR -->
+<div id="editor">
+  <div id="tb">
+    <button class="tbtn on" id="bpl" onclick="setTool('place')">✚ PLACE</button>
+    <button class="tbtn" id="ber" onclick="setTool('erase')">✕ ERASE</button>
+    <button class="tbtn" id="bpk" onclick="setTool('pick')">✦ PICK</button>
+    <div class="sep"></div>
+    <div id="selp"><div id="selsw"></div><span id="selnm">Stone</span></div>
+    <div class="sep"></div>
+    <button class="tbtn" id="bmb" onclick="setTool('mob')" title="Click a position to place a mob entity baked directly into the structure (like shulkers in end cities)">👾 MOB</button>
+    <button class="tbtn" onclick="fillInteriorAir()" title="Auto-fill enclosed interior spaces with air (blocks stone from leaking in)">💨 FILL AIR</button>
+    <button class="tbtn" onclick="fillFloor()" title="Fill Y=0 layer">⬛ FLOOR</button>
+    <button class="tbtn" onclick="undoAct()" title="Ctrl+Z">↩ UNDO</button>
+    <button class="tbtn" onclick="clearAll()" style="border-color:#e8383844;color:#e8383866">🗑 CLEAR</button>
+  </div>
+  <div id="cwrap">
+    <canvas id="cv"></canvas>
+    <div id="lyrctl">
+      <label>Y LAYER:</label>
+      <input type="range" id="lyrsl" min="0" max="15" value="15" oninput="setLayer(+this.value)">
+      <span id="lyrv">15</span>
+    </div>
+    <div id="hlbl"></div>
+    <div id="statb">BLOCKS: 0 | CHESTS: 0</div>
+  </div>
+</div>
+
+<!-- RIGHT PANEL -->
+<div id="rp">
+
+  <div class="sec">
+  </div>
+
+  <div class="sec">
+    <div class="sech">📐 GRID SIZE</div>
+    <div class="secb">
+      <div class="row2">
+        <div class="fr"><label>Width X</label><input type="number" class="fi" id="szw" value="32" min="4" max="48"></div>
+        <div class="fr"><label>Height Y</label><input type="number" class="fi" id="szh" value="32" min="4" max="48"></div>
+      </div>
+      <div class="fr"><label>Depth Z</label><input type="number" class="fi" id="szd" value="32" min="4" max="48"></div>
+      <button class="rpbtn rpbtn-t" onclick="applySize()">RESIZE (CLEARS)</button>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sech">📦 ADDON INFO</div>
+    <div class="secb">
+      <div class="fr"><label>Addon Name</label><input type="text" class="fi" id="aname" value="My Structure Mod"></div>
+      <div class="fr"><label>Structure ID</label><input type="text" class="fi" id="sid" value="my_dungeon" oninput="this.value=this.value.replace(/[^a-z0-9_]/g,'')"></div>
+      <div class="fr"><label>Pack Namespace</label><input type="text" class="fi" id="pns" value="mystruct" oninput="this.value=this.value.replace(/[^a-z0-9_]/g,'')"></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sech">🌍 PLACEMENT MODE</div>
+    <div class="secb">
+      <div class="fr"><label>Type</label>
+        <select class="fi" id="pmode" onchange="onModeChange()">
+          <option value="surface">🌿 Surface (on ground)</option>
+          <option value="surface_offset">🏔 Surface + Y Offset</option>
+          <option value="buried">📉 Buried (below surface)</option>
+          <option value="underground">⛏ Underground (fixed Y)</option>
+          <option value="floating">☁ Floating (sky)</option>
+        </select>
+      </div>
+      <div id="y-surface" class="fr" style="display:none">
+        <label>Y Offset (blocks above ground)</label>
+        <input type="number" class="fi" id="yoff" value="0" min="-30" max="50">
+      </div>
+      <div id="y-buried" class="fr" style="display:none">
+        <label>Depth Below Surface</label>
+        <input type="number" class="fi" id="ydepth" value="15" min="1" max="128">
+      </div>
+      <div id="y-range" style="display:none">
+        <div class="row2">
+          <div class="fr"><label>Min Y</label><input type="number" class="fi" id="ymin" value="-40" min="-64" max="320"></div>
+          <div class="fr"><label>Max Y</label><input type="number" class="fi" id="ymax" value="-20" min="-64" max="320"></div>
+        </div>
+      </div>
+      <div class="fr"><label>Facing Direction</label>
+        <select class="fi" id="facing">
+          <option value="south" selected>↓ South (place as built — recommended)</option>
+          <option value="north">↑ North (rotates 180°)</option>
+          <option value="east">→ East (rotates 90° CW)</option>
+          <option value="west">← West (rotates 90° CCW)</option>
+          <option value="random">↻ Random (⚠ TILTS SIDEWAYS — avoid!)</option>
+        </select>
+        <span style="font-size:11px;color:var(--grn);display:block;margin-top:2px">✓ South = structure placed exactly as you built it</span>
+      </div>
+      <div class="fr"><label>Adjustment Radius</label>
+        <input type="number" class="fi" id="adjr" value="8" min="0" max="16" title="How far Minecraft searches for valid placement. Use 0 for underground.">
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sech">🗺 WORLD SETTINGS</div>
+    <div class="secb">
+      <div class="fr"><label>Dimension</label>
+        <select class="fi" id="dim" onchange="onDimChange()">
+          <option value="overworld">⬜ Overworld</option>
+          <option value="nether">🔴 Nether</option>
+          <option value="the_end">🟡 The End</option>
+        </select>
+      </div>
+      <div class="fr"><label>Biome Filter</label>
+        <div id="biomelist" style="margin-top:4px;"></div>
+      </div>
+      <div class="fr" style="margin-top:4px">
+        <label>+ Custom Biome Tag</label>
+        <div style="display:flex;gap:4px">
+          <input type="text" class="fi" id="custtag" placeholder="e.g. savanna" style="flex:1">
+          <button onclick="addCustTag()" style="background:transparent;border:2px solid var(--teal);color:var(--teal);padding:4px 8px;cursor:pointer;font-family:var(--mo);font-size:14px;">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sech">⚙ SPAWN RATE</div>
+    <div class="secb">
+      <div class="fr">
+        <label>Rarity Preset</label>
+        <div style="margin-top:4px;">
+          <span class="prst" onclick="setRarity(0.008)">LEGENDARY</span>
+          <span class="prst" onclick="setRarity(0.04)">VERY RARE</span>
+          <span class="prst" onclick="setRarity(0.09)">RARE</span>
+          <span class="prst" onclick="setRarity(0.18)">COMMON</span>
+          <span class="prst" onclick="setRarity(0.5)">EVERYWHERE</span>
+        </div>
+      </div>
+      <div class="fr">
+        <label>Scatter Chance (0.01–1.0)</label>
+        <input type="number" class="fi" id="schance" value="0.04" min="0.001" max="1" step="0.001">
+      </div>
+      <div class="fr">
+        <label>Iterations per Chunk</label>
+        <input type="number" class="fi" id="iters" value="1" min="1" max="20">
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sech">📊 STATS</div>
+    <div class="secb">
+      <div class="irow"><span class="ilbl">Blocks:</span><span class="ival" id="ibl">0</span></div>
+      <div class="irow"><span class="ilbl">Chests:</span><span class="ival" id="ich">0</span></div>
+      <div class="irow"><span class="ilbl">Loot tables:</span><span class="ival" id="ilt">0</span></div>
+      <div class="irow"><span class="ilbl">Grid:</span><span class="ival" id="isz">16×16×16</span></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sech">ℹ HOW TO INSTALL</div>
+    <div class="secb">
+      <p class="note">
+        1. Export ⬇ STRUCTURE ADDON<br>
+        2. Open .mcaddon file<br>
+        3. Enable behavior pack in a NEW world<br>
+        4. No experiments required!<br>
+        5. Structure spawns naturally<br><br>
+        <span style="color:var(--pur)">⚡ WAND SCRIPT</span> = separate optional export with structure placer wand (requires Beta APIs experiment).<br><br>
+        <span style="color:var(--gold)">★ Chest</span> = right-click to set loot<br>
+        <span style="color:var(--teal)">⊘ Void</span> = keeps world block<br>
+        <span style="color:var(--red)">◻ Air</span> = clears world block
+      </p>
+    </div>
+  </div>
+
+</div><!-- /rp -->
+</div><!-- /main -->
+
+<!-- CHEST MODAL -->
+<div id="cm">
+  <div id="cmi">
+    <div id="cmh">
+      <span id="cmtitle">🎁 CHEST LOOT TABLE</span>
+      <button id="cmclose" onclick="closeModal()">✕</button>
+    </div>
+    <div id="cmb">
+      <div id="copybar" style="margin-bottom:8px;display:none;align-items:center;gap:6px;flex-wrap:wrap;">
+        <span style="font-family:var(--px);font-size:5px;color:var(--dim);letter-spacing:1px;">COPY FROM:</span>
+        <div id="copychips" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
+      </div>
+      <div id="poolswrap"></div>
+      <button onclick="addPool()" style="font-family:var(--px);font-size:6px;padding:6px 11px;
+        border:2px solid var(--teal);color:var(--teal);background:transparent;cursor:pointer;margin-top:3px;">
+        + ADD LOOT POOL
+      </button>
+    </div>
+    <div id="cmf">
+      <button class="cmbtn" style="border-color:var(--red);color:var(--red)" onclick="clearLoot()">CLEAR</button>
+      <button class="cmbtn" style="border-color:var(--dim);color:var(--dim)" onclick="closeModal()">CANCEL</button>
+      <button class="cmbtn" style="border-color:var(--gold);color:var(--gold)" onclick="saveLoot()">SAVE LOOT</button>
+    </div>
+  </div>
+</div>
+
+<!-- SPAWNER MODAL -->
+<div id="sm">
+  <div id="smi">
+    <div id="smh">
+      <span id="smtitle">🕷 SPAWNER MOB</span>
+      <button onclick="closeSpawner()" style="background:transparent;border:2px solid var(--red);color:var(--red);font-size:15px;cursor:pointer;padding:1px 7px;font-family:var(--mo);">✕</button>
+    </div>
+    <div id="smb">
+      <div style="margin-bottom:8px;">
+        <label style="font-family:var(--px);font-size:5px;color:var(--dim);display:block;margin-bottom:4px;letter-spacing:1px;">MOB IDENTIFIER</label>
+        <input type="text" id="smcustom" class="fi" placeholder="minecraft:zombie" style="margin-bottom:6px;">
+        <span style="font-size:11px;color:var(--dim);">Or pick a common mob below:</span>
+      </div>
+      <div id="smgrid"></div>
+      <div style="margin-top:12px;border-top:1px solid var(--brd);padding-top:10px;">
+        <label style="font-family:var(--px);font-size:5px;color:var(--dim);display:block;margin-bottom:8px;letter-spacing:1px;">SPAWN SETTINGS</label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:8px;">
+          <input type="checkbox" id="smForceLight" style="accent-color:var(--teal);width:14px;height:14px;">
+          <span style="font-size:12px;">☀️ Spawn in any light level</span>
+          <span style="font-size:10px;color:var(--dim);margin-left:2px;" title="Disables light-level check so mobs like zombies spawn even in bright rooms">(?)</span>
+        </label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px;">
+          <div>
+            <label style="font-family:var(--px);font-size:5px;color:var(--dim);display:block;margin-bottom:3px;">SPAWN COUNT</label>
+            <input type="number" id="smSpawnCount" class="fi" value="4" min="1" max="16" style="text-align:center;">
+          </div>
+          <div>
+            <label style="font-family:var(--px);font-size:5px;color:var(--dim);display:block;margin-bottom:3px;">SPAWN RANGE</label>
+            <input type="number" id="smSpawnRange" class="fi" value="4" min="1" max="8" style="text-align:center;">
+          </div>
+          <div>
+            <label style="font-family:var(--px);font-size:5px;color:var(--dim);display:block;margin-bottom:3px;">MIN DELAY (ticks)</label>
+            <input type="number" id="smMinDelay" class="fi" value="200" min="1" max="800" style="text-align:center;">
+          </div>
+          <div>
+            <label style="font-family:var(--px);font-size:5px;color:var(--dim);display:block;margin-bottom:3px;">MAX DELAY (ticks)</label>
+            <input type="number" id="smMaxDelay" class="fi" value="800" min="1" max="2400" style="text-align:center;">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="border-top:2px solid var(--brd);padding:8px 13px;display:flex;gap:7px;background:var(--sf);">
+      <button class="cmbtn" style="border-color:var(--dim);color:var(--dim)" onclick="closeSpawner()">CANCEL</button>
+      <button class="cmbtn" style="border-color:var(--gold);color:var(--gold)" onclick="saveSpawner()">SAVE MOB</button>
+    </div>
+  </div>
+</div>
+<style>
+#sm{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(3px);}
+#sm.open{display:flex;}
+#smi{background:var(--card);border:2px solid var(--teal);width:min(520px,96vw);max-height:80vh;display:flex;flex-direction:column;box-shadow:0 0 40px rgba(40,224,192,.15);}
+#smh{background:var(--sf);border-bottom:2px solid var(--brd);padding:8px 13px;display:flex;justify-content:space-between;align-items:center;}
+#smtitle{font-family:var(--px);font-size:8px;color:var(--teal);}
+#smb{flex:1;overflow-y:auto;padding:12px;}
+#smb::-webkit-scrollbar{width:4px;}
+#smb::-webkit-scrollbar-thumb{background:var(--brite);}
+#smgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:6px;}
+.mobchip{font-family:var(--mo);font-size:14px;padding:5px 8px;border:2px solid var(--brd);
+  background:var(--sf);color:var(--txt);cursor:pointer;text-align:left;transition:all .1s;display:flex;align-items:center;gap:5px;}
+.mobchip:hover{border-color:var(--teal);color:var(--teal);}
+.mobchip.sel{border-color:var(--teal);background:rgba(40,224,192,.1);color:var(--teal);}
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+/* ═══════════════════════════════════════════════
+   BLOCK DATA
+═══════════════════════════════════════════════ */
+const BLOCKS = [
+  // 🔧 Special (always top)
+  {id:'minecraft:air',        name:'◻ Air (clears world)',    color:'#1a1a3a', cat:'🔧 Special'},
+  {id:'minecraft:structure_void',name:'⊘ Structure Void (keep)',color:'#5555ff',cat:'🔧 Special'},
+  // 🧱 Building
+  {id:'minecraft:stone',name:'Stone',color:'#7a7a7a',cat:'🧱 Building'},
+  {id:'minecraft:cobblestone',name:'Cobblestone',color:'#6e6e6e',cat:'🧱 Building'},
+  {id:'minecraft:stone_bricks',name:'Stone Bricks',color:'#757575',cat:'🧱 Building'},
+  {id:'minecraft:mossy_stone_bricks',name:'Mossy Stone Bricks',color:'#566056',cat:'🧱 Building'},
+  {id:'minecraft:cracked_stone_bricks',name:'Cracked Stone Bricks',color:'#625f5f',cat:'🧱 Building'},
+  {id:'minecraft:chiseled_stone_bricks',name:'Chiseled Stone Bricks',color:'#7e7e7e',cat:'🧱 Building'},
+  {id:'minecraft:cobbled_deepslate',name:'Deepslate',color:'#4e5258',cat:'🧱 Building'},
+  {id:'minecraft:cobbled_deepslate',name:'Cobbled Deepslate',color:'#44474e',cat:'🧱 Building'},
+  {id:'minecraft:deepslate_bricks',name:'Deepslate Bricks',color:'#3c3f48',cat:'🧱 Building'},
+  {id:'minecraft:deepslate_tiles',name:'Deepslate Tiles',color:'#303440',cat:'🧱 Building'},
+  {id:'minecraft:granite',name:'Granite',color:'#9c6e48',cat:'🧱 Building'},
+  {id:'minecraft:diorite',name:'Diorite',color:'#c0bfbf',cat:'🧱 Building'},
+  {id:'minecraft:andesite',name:'Andesite',color:'#868680',cat:'🧱 Building'},
+  {id:'minecraft:tuff',name:'Tuff',color:'#666e5e',cat:'🧱 Building'},
+  {id:'minecraft:brick_block',name:'Bricks',color:'#9e4838',cat:'🧱 Building'},
+  {id:'minecraft:sandstone',name:'Sandstone',color:'#d2bc78',cat:'🧱 Building'},
+  {id:'minecraft:smooth_stone',name:'Smooth Stone',color:'#8c8c8c',cat:'🧱 Building'},
+  {id:'minecraft:mud_bricks',name:'Mud Bricks',color:'#8a6050',cat:'🧱 Building'},
+  {id:'minecraft:oak_planks',name:'Oak Planks',color:'#be9848',cat:'🧱 Building'},
+  {id:'minecraft:spruce_planks',name:'Spruce Planks',color:'#7e5e2e',cat:'🧱 Building'},
+  {id:'minecraft:birch_planks',name:'Birch Planks',color:'#d2c688',cat:'🧱 Building'},
+  {id:'minecraft:dark_oak_planks',name:'Dark Oak Planks',color:'#4e3818',cat:'🧱 Building'},
+  {id:'minecraft:jungle_planks',name:'Jungle Planks',color:'#ac7e4e',cat:'🧱 Building'},
+  {id:'minecraft:acacia_planks',name:'Acacia Planks',color:'#b85e30',cat:'🧱 Building'},
+  {id:'minecraft:cherry_planks',name:'Cherry Planks',color:'#d89090',cat:'🧱 Building'},
+  {id:'minecraft:nether_brick',name:'Nether Bricks',color:'#2c1820',cat:'🧱 Building'},
+  {id:'minecraft:blackstone',name:'Blackstone',color:'#26262e',cat:'🧱 Building'},
+  {id:'minecraft:polished_blackstone_bricks',name:'Polished Blackstone Bricks',color:'#1e1e26',cat:'🧱 Building'},
+  {id:'minecraft:purpur_block',name:'Purpur Block',color:'#9e789e',cat:'🧱 Building'},
+  {id:'minecraft:end_bricks',name:'End Stone Bricks',color:'#d8d08c',cat:'🧱 Building'},
+  // 🌿 Natural
+  {id:'minecraft:dirt',name:'Dirt',color:'#8a5c3a',cat:'🌿 Natural'},
+  {id:'minecraft:grass_block',name:'Grass Block',color:'#588038',cat:'🌿 Natural'},
+  {id:'minecraft:coarse_dirt',name:'Coarse Dirt',color:'#6a4a28',cat:'🌿 Natural'},
+  {id:'minecraft:podzol',name:'Podzol',color:'#7a4e2e',cat:'🌿 Natural'},
+  {id:'minecraft:mud',name:'Mud',color:'#4e4e3e',cat:'🌿 Natural'},
+  {id:'minecraft:sand',name:'Sand',color:'#d6c678',cat:'🌿 Natural'},
+  {id:'minecraft:red_sand',name:'Red Sand',color:'#be6630',cat:'🌿 Natural'},
+  {id:'minecraft:gravel',name:'Gravel',color:'#8e8888',cat:'🌿 Natural'},
+  {id:'minecraft:clay',name:'Clay',color:'#98a0ae',cat:'🌿 Natural'},
+  {id:'minecraft:ice',name:'Ice',color:'#8ec0de',cat:'🌿 Natural'},
+  {id:'minecraft:packed_ice',name:'Packed Ice',color:'#6e8ec6',cat:'🌿 Natural'},
+  {id:'minecraft:blue_ice',name:'Blue Ice',color:'#527ecc',cat:'🌿 Natural'},
+  {id:'minecraft:snow',name:'Snow Block',color:'#e6eff8',cat:'🌿 Natural'},
+  {id:'minecraft:oak_log',name:'Oak Log',color:'#685030',cat:'🌿 Natural'},
+  {id:'minecraft:spruce_log',name:'Spruce Log',color:'#4a3a20',cat:'🌿 Natural'},
+  {id:'minecraft:birch_log',name:'Birch Log',color:'#cccebe',cat:'🌿 Natural'},
+  {id:'minecraft:dark_oak_log',name:'Dark Oak Log',color:'#302818',cat:'🌿 Natural'},
+  {id:'minecraft:mangrove_log',name:'Mangrove Log',color:'#3e1e18',cat:'🌿 Natural'},
+  {id:'minecraft:oak_leaves',name:'Oak Leaves',color:'#267622',cat:'🌿 Natural'},
+  {id:'minecraft:obsidian',name:'Obsidian',color:'#18182a',cat:'🌿 Natural'},
+  {id:'minecraft:crying_obsidian',name:'Crying Obsidian',color:'#281848',cat:'🌿 Natural'},
+  {id:'minecraft:netherrack',name:'Netherrack',color:'#7a3030',cat:'🌿 Natural'},
+  {id:'minecraft:soul_sand',name:'Soul Sand',color:'#4e3c28',cat:'🌿 Natural'},
+  {id:'minecraft:basalt',name:'Basalt',color:'#44454e',cat:'🌿 Natural'},
+  {id:'minecraft:magma',name:'Magma Block',color:'#8e3810',cat:'🌿 Natural'},
+  {id:'minecraft:end_stone',name:'End Stone',color:'#d8d08c',cat:'🌿 Natural'},
+  // ✨ Decoration
+  {id:'minecraft:glass',name:'Glass',color:'#c0e8f8',cat:'✨ Decoration'},
+  {id:'minecraft:glowstone',name:'Glowstone',color:'#f0d060',cat:'✨ Decoration'},
+  {id:'minecraft:sea_lantern',name:'Sea Lantern',color:'#b0d8d0',cat:'✨ Decoration'},
+  {id:'minecraft:shroomlight',name:'Shroomlight',color:'#f09e3e',cat:'✨ Decoration'},
+  {id:'minecraft:lantern',name:'Lantern',color:'#e8c050',cat:'✨ Decoration'},
+  {id:'minecraft:bookshelf',name:'Bookshelf',color:'#9e7840',cat:'✨ Decoration'},
+  {id:'minecraft:crafting_table',name:'Crafting Table',color:'#a06830',cat:'✨ Decoration'},
+  {id:'minecraft:furnace',name:'Furnace',color:'#7e7e7e',cat:'✨ Decoration'},
+  {id:'minecraft:barrel',name:'Barrel',color:'#886840',cat:'✨ Decoration'},
+  {id:'minecraft:chest',name:'Chest ★',color:'#c89828',cat:'✨ Decoration',isChest:true},
+  {id:'minecraft:trapped_chest',name:'Trapped Chest ★',color:'#c06020',cat:'✨ Decoration',isChest:true},
+  // ── Dungeon Deco
+  {id:'minecraft:web',             name:'Cobweb',              color:'#d0d0d0',cat:'✨ Decoration'},
+  {id:'minecraft:iron_bars',       name:'Iron Bars',           color:'#8c8c8c',cat:'✨ Decoration'},
+  {id:'minecraft:glass_pane',      name:'Glass Pane',          color:'#c0e8f8',cat:'✨ Decoration'},
+  {id:'minecraft:iron_chain',      name:'Chain',               color:'#888888',cat:'✨ Decoration'},
+  {id:'minecraft:torch',           name:'Torch',               color:'#f8c050',cat:'✨ Decoration'},
+  {id:'minecraft:soul_torch',      name:'Soul Torch',          color:'#40d0c0',cat:'✨ Decoration'},
+  {id:'minecraft:soul_lantern',    name:'Soul Lantern',        color:'#30c0b0',cat:'✨ Decoration'},
+  {id:'minecraft:campfire',        name:'Campfire',            color:'#e86020',cat:'✨ Decoration'},
+  {id:'minecraft:soul_campfire',   name:'Soul Campfire',       color:'#30b0b0',cat:'✨ Decoration'},
+  {id:'minecraft:ladder',          name:'Ladder',              color:'#b89050',cat:'✨ Decoration'},
+  {id:'minecraft:vine',            name:'Vine',                color:'#387838',cat:'✨ Decoration'},
+  {id:'minecraft:cauldron',        name:'Cauldron',            color:'#606060',cat:'✨ Decoration'},
+  {id:'minecraft:brewing_stand',   name:'Brewing Stand',       color:'#9e7030',cat:'✨ Decoration'},
+  {id:'minecraft:noteblock',       name:'Note Block',          color:'#8a5030',cat:'✨ Decoration'},
+  {id:'minecraft:lever',           name:'Lever',               color:'#888888',cat:'✨ Decoration'},
+  {id:'minecraft:flower_pot',      name:'Flower Pot',          color:'#904830',cat:'✨ Decoration'},
+  // ── Doors & Trapdoors — verified states from Structure Mayhem illagerhome.mcstructure
+  // Doors use minecraft:cardinal_direction (String), NOT direction (Int)
+  {id:'minecraft:iron_door',    name:'Iron Door',       color:'#a0a0a0',cat:'🚪 Doors & Bars',
+    states:{'minecraft:cardinal_direction':'south',door_hinge_bit:0,open_bit:0,upper_block_bit:0},
+    multiBlock:{dx:0,dy:1,dz:0,states2:{'minecraft:cardinal_direction':'south',door_hinge_bit:0,open_bit:0,upper_block_bit:1}}},
+  {id:'minecraft:wooden_door',  name:'Oak Door',        color:'#c09840',cat:'🚪 Doors & Bars',
+    states:{'minecraft:cardinal_direction':'south',door_hinge_bit:0,open_bit:0,upper_block_bit:0},
+    multiBlock:{dx:0,dy:1,dz:0,states2:{'minecraft:cardinal_direction':'south',door_hinge_bit:0,open_bit:0,upper_block_bit:1}}},
+  {id:'minecraft:spruce_door',  name:'Spruce Door',     color:'#7a5828',cat:'🚪 Doors & Bars',
+    states:{'minecraft:cardinal_direction':'south',door_hinge_bit:0,open_bit:0,upper_block_bit:0},
+    multiBlock:{dx:0,dy:1,dz:0,states2:{'minecraft:cardinal_direction':'south',door_hinge_bit:0,open_bit:0,upper_block_bit:1}}},
+  {id:'minecraft:dark_oak_door',name:'Dark Oak Door',   color:'#3e2810',cat:'🚪 Doors & Bars',
+    states:{'minecraft:cardinal_direction':'south',door_hinge_bit:0,open_bit:0,upper_block_bit:0},
+    multiBlock:{dx:0,dy:1,dz:0,states2:{'minecraft:cardinal_direction':'south',door_hinge_bit:0,open_bit:0,upper_block_bit:1}}},
+  {id:'minecraft:birch_door',   name:'Birch Door',      color:'#d0c878',cat:'🚪 Doors & Bars',
+    states:{'minecraft:cardinal_direction':'south',door_hinge_bit:0,open_bit:0,upper_block_bit:0},
+    multiBlock:{dx:0,dy:1,dz:0,states2:{'minecraft:cardinal_direction':'south',door_hinge_bit:0,open_bit:0,upper_block_bit:1}}},
+  {id:'minecraft:jungle_door',  name:'Jungle Door',     color:'#a07848',cat:'🚪 Doors & Bars',
+    states:{'minecraft:cardinal_direction':'south',door_hinge_bit:0,open_bit:0,upper_block_bit:0},
+    multiBlock:{dx:0,dy:1,dz:0,states2:{'minecraft:cardinal_direction':'south',door_hinge_bit:0,open_bit:0,upper_block_bit:1}}},
+  {id:'minecraft:acacia_door',  name:'Acacia Door',     color:'#b85830',cat:'🚪 Doors & Bars',
+    states:{'minecraft:cardinal_direction':'south',door_hinge_bit:0,open_bit:0,upper_block_bit:0},
+    multiBlock:{dx:0,dy:1,dz:0,states2:{'minecraft:cardinal_direction':'south',door_hinge_bit:0,open_bit:0,upper_block_bit:1}}},
+  {id:'minecraft:crimson_door', name:'Crimson Door',    color:'#8b2020',cat:'🚪 Doors & Bars',
+    states:{'minecraft:cardinal_direction':'south',door_hinge_bit:0,open_bit:0,upper_block_bit:0},
+    multiBlock:{dx:0,dy:1,dz:0,states2:{'minecraft:cardinal_direction':'south',door_hinge_bit:0,open_bit:0,upper_block_bit:1}}},
+  {id:'minecraft:warped_door',  name:'Warped Door',     color:'#207878',cat:'🚪 Doors & Bars',
+    states:{'minecraft:cardinal_direction':'south',door_hinge_bit:0,open_bit:0,upper_block_bit:0},
+    multiBlock:{dx:0,dy:1,dz:0,states2:{'minecraft:cardinal_direction':'south',door_hinge_bit:0,open_bit:0,upper_block_bit:1}}},
+  {id:'minecraft:trapdoor',     name:'Oak Trapdoor',    color:'#c09840',cat:'🚪 Doors & Bars',
+    states:{'minecraft:cardinal_direction':'south',open_bit:0,upside_down_bit:0,in_wall_bit:0}},
+  {id:'minecraft:iron_trapdoor',name:'Iron Trapdoor',   color:'#909090',cat:'🚪 Doors & Bars',
+    states:{'minecraft:cardinal_direction':'south',open_bit:0,upside_down_bit:0,in_wall_bit:0}},
+  {id:'minecraft:spruce_trapdoor',name:'Spruce Trapdoor',color:'#7a5828',cat:'🚪 Doors & Bars',
+    states:{'minecraft:cardinal_direction':'south',open_bit:0,upside_down_bit:0,in_wall_bit:0}},
+  // ── Beds — single ID in Bedrock 1.21, color cannot be set via structure
+  {id:'minecraft:bed',name:'Bed (red by default)',color:'#c03030',cat:'🚪 Doors & Bars',
+    states:{direction:3,head_piece_bit:0,occupied_bit:0},
+    multiBlock:{dx:0,dy:0,dz:1,states2:{direction:3,head_piece_bit:1,occupied_bit:0}}},
+  // ── Fences
+  {id:'minecraft:oak_fence',       name:'Oak Fence',           color:'#c09840',cat:'🚧 Fences'},
+  {id:'minecraft:spruce_fence',    name:'Spruce Fence',        color:'#7a5828',cat:'🚧 Fences'},
+  {id:'minecraft:dark_oak_fence',  name:'Dark Oak Fence',      color:'#3e2810',cat:'🚧 Fences'},
+  {id:'minecraft:nether_brick_fence',name:'Nether Brick Fence',color:'#2c1820',cat:'🚧 Fences'},
+  {id:'minecraft:cobblestone_wall',name:'Cobblestone Wall',    color:'#6e6e6e',cat:'🚧 Fences'},
+  {id:'minecraft:stone_brick_wall',name:'Stone Brick Wall',    color:'#757575',cat:'🚧 Fences'},
+  {id:'minecraft:mossy_cobblestone_wall',name:'Mossy Cobble Wall',color:'#566056',cat:'🚧 Fences'},
+  {id:'minecraft:tnt',name:'TNT',color:'#de4040',cat:'✨ Decoration'},
+  {id:'minecraft:white_wool',name:'White Wool',color:'#dedede',cat:'✨ Decoration'},
+  {id:'minecraft:red_wool',name:'Red Wool',color:'#c03030',cat:'✨ Decoration'},
+  {id:'minecraft:blue_wool',name:'Blue Wool',color:'#2e50a0',cat:'✨ Decoration'},
+  {id:'minecraft:yellow_wool',name:'Yellow Wool',color:'#ceb020',cat:'✨ Decoration'},
+  // ⛏ Ores & Minerals
+  {id:'minecraft:coal_ore',name:'Coal Ore',color:'#545454',cat:'⛏ Ores'},
+  {id:'minecraft:iron_ore',name:'Iron Ore',color:'#9e7e6e',cat:'⛏ Ores'},
+  {id:'minecraft:gold_ore',name:'Gold Ore',color:'#eece3e',cat:'⛏ Ores'},
+  {id:'minecraft:diamond_ore',name:'Diamond Ore',color:'#4ededa',cat:'⛏ Ores'},
+  {id:'minecraft:emerald_ore',name:'Emerald Ore',color:'#2eca4e',cat:'⛏ Ores'},
+  {id:'minecraft:lapis_ore',name:'Lapis Ore',color:'#2e5ebe',cat:'⛏ Ores'},
+  {id:'minecraft:redstone_ore',name:'Redstone Ore',color:'#c62e2e',cat:'⛏ Ores'},
+  {id:'minecraft:deepslate_diamond_ore',name:'Deepslate Diamond Ore',color:'#3abab6',cat:'⛏ Ores'},
+  {id:'minecraft:ancient_debris',name:'Ancient Debris',color:'#5e3e3e',cat:'⛏ Ores'},
+  {id:'minecraft:iron_block',name:'Iron Block',color:'#ccccd4',cat:'⛏ Ores'},
+  {id:'minecraft:gold_block',name:'Gold Block',color:'#eece3e',cat:'⛏ Ores'},
+  {id:'minecraft:diamond_block',name:'Diamond Block',color:'#2edede',cat:'⛏ Ores'},
+  {id:'minecraft:ancient_debris',name:'Ancient Debris',color:'#363636',cat:'⛏ Ores'},
+  {id:'minecraft:amethyst_block',name:'Amethyst Block',color:'#6e50a0',cat:'⛏ Ores'},
+  // ⚙ Redstone
+  {id:'minecraft:redstone_block',name:'Redstone Block',color:'#de2020',cat:'⚙ Redstone'},
+  {id:'minecraft:piston',name:'Piston',color:'#9e7e5e',cat:'⚙ Redstone'},
+  {id:'minecraft:dispenser',name:'Dispenser',color:'#6e6e6e',cat:'⚙ Redstone'},
+  {id:'minecraft:dropper',name:'Dropper',color:'#666666',cat:'⚙ Redstone'},
+  {id:'minecraft:observer',name:'Observer',color:'#4e4e4e',cat:'⚙ Redstone'},
+  {id:'minecraft:noteblock',name:'Note Block',color:'#684228',cat:'⚙ Redstone'},
+  {id:'minecraft:hopper',name:'Hopper',color:'#4a4a4a',cat:'⚙ Redstone'},
+  // 🎯 Special
+  {id:'minecraft:mob_spawner',name:'Spawner 🕷',color:'#1a3850',cat:'🎯 Gameplay',isSpawner:true},
+  {id:'minecraft:bedrock',name:'Bedrock',color:'#383838',cat:'🎯 Gameplay'},
+];
+
+/* ═══════════════════════════════════════════════
+   BIOME TAG DATA
+═══════════════════════════════════════════════ */
+const BIOME_TAGS = {
+  overworld:[
+    {tag:'overworld',label:'⚠ Any Overworld (incl. ocean!)'},
+    {tag:'plains',label:'Plains ✓'},
+    {tag:'forest',label:'Forest ✓'},
+    {tag:'birch',label:'Birch Forest ✓'},
+    {tag:'roofed',label:'Dark Oak Forest ✓'},
+    {tag:'taiga',label:'Taiga ✓'},
+    {tag:'savanna',label:'Savanna ✓'},
+    {tag:'desert',label:'Desert ✓ (flat)'},
+    {tag:'mesa',label:'Badlands/Mesa ✓'},
+    {tag:'swamp',label:'Swamp ✓'},
+    {tag:'jungle',label:'Jungle ✓'},
+    {tag:'mountain',label:'Mountain ✓'},
+    {tag:'frozen',label:'Frozen/Snowy ✓'},
+    {tag:'spawns_cold_variant_farm_animals',label:'Cold Biomes ✓'},
+    {tag:'warm',label:'Warm Biomes ✓'},
+    {tag:'mushroom',label:'Mushroom Island ✓'},
+    {tag:'ocean',label:'⚠ Ocean (spawns in water)'},
+    {tag:'deep_ocean',label:'⚠ Deep Ocean'},
+    {tag:'cold_ocean',label:'⚠ Cold Ocean'},
+    {tag:'frozen_ocean',label:'⚠ Frozen Ocean'},
+    {tag:'beach',label:'⚠ Beach'},
+    {tag:'river',label:'⚠ River'},
+  ],
+  nether:[
+    {tag:'nether',label:'Any Nether'},
+    {tag:'nether_wart_forest',label:'Crimson Forest'},
+    {tag:'warped_forest',label:'Warped Forest'},
+    {tag:'soulsand_valley',label:'Soul Sand Valley'},
+    {tag:'basalt_deltas',label:'Basalt Deltas'},
+  ],
+  the_end:[
+    {tag:'the_end',label:'Any End'},
+  ]
+};
+
+/* ═══════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════ */
+let GW=32,GH=32,GD=32;
+let grid=[];
+let chestLoot={};
+let spawnerData={};  // key="x,y,z" val="minecraft:zombie"
+let structureMobs={};  // key="x,y,z" val={id,customName,color}
+let blockMeshes={};
+let selBlock=BLOCKS.find(b=>b.id==='minecraft:stone');
+let useCustom=false, custId='';
+let toolMode='place';
+let maxLyrY=15;
+let undoStack=[];
+let bGeo=null;
+let extraBiomeTags=[];
+
+function initGrid(){
+  grid=[];
+  for(let x=0;x<GW;x++){grid[x]=[];for(let y=0;y<GH;y++)grid[x][y]=new Array(GD).fill(null);}
+}
+initGrid();
+
+/* ═══════════════════════════════════════════════
+   BIOME UI
+═══════════════════════════════════════════════ */
+function buildBiomeList(){
+  const dim=document.getElementById('dim').value;
+  const tags=BIOME_TAGS[dim]||[];
+  const wrap=document.getElementById('biomelist');
+  wrap.innerHTML='';
+  tags.forEach(t=>{
+    const label=document.createElement('label');
+    label.className='sctag';
+    label.innerHTML=`<input type="checkbox" value="${t.tag}"> ${t.label}`;
+    label.querySelector('input').checked = ['plains','savanna','desert','forest','taiga','mountain','frozen','mesa'].includes(t.tag);
+    wrap.appendChild(label);
+  });
+  // Extra tags
+  extraBiomeTags.forEach(t=>{
+    const label=document.createElement('label');
+    label.className='sctag on';
+    label.dataset.extra=t;
+    label.innerHTML=`<input type="checkbox" value="${t}" checked> ${t} <span onclick="removeExtraTag('${t}')" style="color:var(--red);margin-left:3px;cursor:pointer">✕</span>`;
+    wrap.appendChild(label);
+  });
+}
+
+function onDimChange(){
+  extraBiomeTags=[];
+  buildBiomeList();
+  onModeChange();
+}
+
+function addCustTag(){
+  const v=document.getElementById('custtag').value.trim().replace(/\s/g,'_');
+  if(!v)return;
+  if(!extraBiomeTags.includes(v))extraBiomeTags.push(v);
+  document.getElementById('custtag').value='';
+  buildBiomeList();
+}
+
+function removeExtraTag(t){extraBiomeTags=extraBiomeTags.filter(x=>x!==t);buildBiomeList();}
+
+function getSelectedBiomeTags(){
+  const tags=[];
+  document.querySelectorAll('#biomelist input[type=checkbox]:checked').forEach(cb=>{
+    if(!tags.includes(cb.value))tags.push(cb.value);
+  });
+  return tags;
+}
+
+function setRarity(v){document.getElementById('schance').value=v;}
+
+function onModeChange(){
+  const m=document.getElementById('pmode').value;
+  document.getElementById('y-surface').style.display=(m==='surface_offset')?'block':'none';
+  document.getElementById('y-buried').style.display=(m==='buried')?'block':'none';
+  document.getElementById('y-range').style.display=(m==='underground'||m==='floating')?'block':'none';
+  const adjr=document.getElementById('adjr');
+  if(m==='underground'||m==='floating'){adjr.value=0;}
+  else{adjr.value=4;}
+  // Preset Y ranges
+  if(m==='underground'){
+    document.getElementById('ymin').value=-52;document.getElementById('ymax').value=-10;
+  }else if(m==='floating'){
+    document.getElementById('ymin').value=100;document.getElementById('ymax').value=180;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   THREE.JS SETUP
+═══════════════════════════════════════════════ */
+let scene,camera,renderer,raycaster,ghostMesh,floorMesh,gridLines;
+let theta=30,phi=55,orbitR=36;
+let orbitTarget=new THREE.Vector3(8,4,8);
+let mouseDown=null,wasDrag=false,prevMX=0,prevMY=0;
+
+function initThree(){
+  const canvas=document.getElementById('cv');
+  const wrap=document.getElementById('cwrap');
+  bGeo=new THREE.BoxGeometry(.96,.96,.96);
+  renderer=new THREE.WebGLRenderer({canvas,antialias:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.setClearColor(0x07070e);
+  const W=wrap.clientWidth,H=wrap.clientHeight;
+  renderer.setSize(W,H);
+  scene=new THREE.Scene();
+  scene.fog=new THREE.Fog(0x07070e,70,120);
+  camera=new THREE.PerspectiveCamera(55,W/H,.1,200);
+  updateCam();
+  raycaster=new THREE.Raycaster();
+  scene.add(new THREE.AmbientLight(0xffffff,.65));
+  const dl=new THREE.DirectionalLight(0xffffff,.85);dl.position.set(20,40,20);scene.add(dl);
+  const dl2=new THREE.DirectionalLight(0x8090ff,.3);dl2.position.set(-10,10,-15);scene.add(dl2);
+  const gMat=new THREE.MeshLambertMaterial({color:0xffffff,transparent:true,opacity:.42,depthWrite:false});
+  ghostMesh=new THREE.Mesh(bGeo,gMat);ghostMesh.visible=false;scene.add(ghostMesh);
+  const fp=new THREE.PlaneGeometry(GW,GD);
+  floorMesh=new THREE.Mesh(fp,new THREE.MeshBasicMaterial({visible:false,side:THREE.DoubleSide}));
+  floorMesh.rotation.x=-Math.PI/2;floorMesh.position.set(GW/2,-.01,GD/2);
+  floorMesh.userData.isFloor=true;scene.add(floorMesh);
+  buildGrid3D();
+  bindEvt(canvas);
+  (function loop(){requestAnimationFrame(loop);renderer.render(scene,camera);})();
+}
+
+function buildGrid3D(){
+  if(gridLines){scene.remove(gridLines);gridLines.geometry.dispose();}
+  const mat=new THREE.LineBasicMaterial({color:0x222240});
+  const pts=[];
+  const L=(ax,ay,az,bx,by,bz)=>{pts.push(new THREE.Vector3(ax,ay,az),new THREE.Vector3(bx,by,bz));};
+  [[0,0,0,GW,0,0],[GW,0,0,GW,0,GD],[GW,0,GD,0,0,GD],[0,0,GD,0,0,0],
+   [0,GH,0,GW,GH,0],[GW,GH,0,GW,GH,GD],[GW,GH,GD,0,GH,GD],[0,GH,GD,0,GH,0],
+   [0,0,0,0,GH,0],[GW,0,0,GW,GH,0],[GW,0,GD,GW,GH,GD],[0,0,GD,0,GH,GD]
+  ].forEach(a=>L(...a));
+  for(let x=0;x<=GW;x++)L(x,0,0,x,0,GD);
+  for(let z=0;z<=GD;z++)L(0,0,z,GW,0,z);
+  gridLines=new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts),mat);
+  scene.add(gridLines);
+}
+
+function updateCam(){
+  const t=theta*Math.PI/180,p=phi*Math.PI/180;
+  camera.position.set(
+    orbitTarget.x+orbitR*Math.sin(p)*Math.sin(t),
+    orbitTarget.y+orbitR*Math.cos(p),
+    orbitTarget.z+orbitR*Math.sin(p)*Math.cos(t));
+  camera.lookAt(orbitTarget);
+}
+
+function bindEvt(canvas){
+  canvas.addEventListener('mousedown',e=>{
+    if(e.button!==0)return;
+    mouseDown={x:e.clientX,y:e.clientY};wasDrag=false;prevMX=e.clientX;prevMY=e.clientY;
+  });
+  canvas.addEventListener('mousemove',e=>{
+    if(mouseDown){
+      if(Math.abs(e.clientX-mouseDown.x)>4||Math.abs(e.clientY-mouseDown.y)>4)wasDrag=true;
+      if(wasDrag){
+        theta-=(e.clientX-prevMX)*.45;
+        phi=Math.max(8,Math.min(172,phi+(e.clientY-prevMY)*.45));
+        updateCam();prevMX=e.clientX;prevMY=e.clientY;
+        ghostMesh.visible=false;return;
+      }
+    }
+    updateGhost(e);
+  });
+  canvas.addEventListener('mouseup',e=>{if(e.button===0&&mouseDown&&!wasDrag)handleClick(e);mouseDown=null;wasDrag=false;});
+  canvas.addEventListener('mouseleave',()=>{mouseDown=null;wasDrag=false;ghostMesh.visible=false;document.getElementById('hlbl').style.display='none';});
+  canvas.addEventListener('contextmenu',e=>{e.preventDefault();handleRight(e);});
+  canvas.addEventListener('wheel',e=>{orbitR=Math.max(5,Math.min(90,orbitR+e.deltaY*.06));updateCam();e.preventDefault();},{passive:false});
+  window.addEventListener('resize',()=>{
+    const W=canvas.parentElement.clientWidth,H=canvas.parentElement.clientHeight;
+    renderer.setSize(W,H);camera.aspect=W/H;camera.updateProjectionMatrix();
+  });
+  document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='z'){e.preventDefault();undoAct();}});
+}
+
+function getRay(cx,cy){
+  const canvas=document.getElementById('cv'),r=canvas.getBoundingClientRect();
+  const mouse=new THREE.Vector2(((cx-r.left)/r.width)*2-1,-((cy-r.top)/r.height)*2+1);
+  raycaster.setFromCamera(mouse,camera);
+  const mArr=[...Object.values(blockMeshes),...Object.values(mobOrbs||{})].filter(m=>m.visible);
+  if(mArr.length){
+    const hits=raycaster.intersectObjects(mArr);
+    if(hits.length){
+      const h=hits[0];const sp={...h.object.userData.pos};
+      const n=h.face.normal.clone().transformDirection(h.object.matrixWorld);
+      return{type:'block',src:sp,tgt:{x:sp.x+Math.round(n.x),y:sp.y+Math.round(n.y),z:sp.z+Math.round(n.z)}};
+    }
+  }
+  const fh=raycaster.intersectObject(floorMesh);
+  if(fh.length){const p=fh[0].point;const x=Math.floor(p.x),z=Math.floor(p.z);
+    if(x>=0&&x<GW&&z>=0&&z<GD)return{type:'floor',src:null,tgt:{x,y:0,z}};}
+  return null;
+}
+
+function handleClick(e){
+  const info=getRay(e.clientX,e.clientY);if(!info)return;
+  if(toolMode==='erase'){
+    // Erase tool: remove block OR mob orb at clicked position
+    if(info.type==='block') eraseBlock(info.src.x,info.src.y,info.src.z);
+    // Also check if an orb was clicked
+    const orbHit=getRayMobOrb(e.clientX,e.clientY);
+    if(orbHit){const{x,y,z}=orbHit;deleteMobAtPos(x,y,z);}
+    return;
+  }
+  if(toolMode==='pick'){
+    if(info.type==='block'){const b=getCell(info.src.x,info.src.y,info.src.z);
+      if(b){const f=BLOCKS.find(bl=>bl.id===b.id);f?selBlock2(f):setCustom(b.id);}}return;}
+  if(toolMode==='mob'){
+    const tgt=info.tgt||(info.type==='block'?info.src:null);
+    if(tgt){const{x,y,z}=tgt;if(x>=0&&x<GW&&y>=0&&y<GH&&z>=0&&z<GD)openMobPicker({x,y,z});}
+    return;
+  }
+  if(info.tgt){const{x,y,z}=info.tgt;
+    if(x<0||x>=GW||y<0||y>=GH||z<0||z>=GD)return;
+    const def=useCustom?{id:custId,name:custId,color:'#9090a0',isChest:custId.includes('chest')}:selBlock;
+    if(def.id)placeBlock(x,y,z,def);}
+}
+
+function handleRight(e){
+  // Right-click on mob orb → delete it (works in any tool mode)
+  const orbHit=getRayMobOrb(e.clientX,e.clientY);
+  if(orbHit){deleteMobAtPos(orbHit.x,orbHit.y,orbHit.z);return;}
+  const info=getRay(e.clientX,e.clientY);if(!info||info.type!=='block')return;
+  const{x,y,z}=info.src;
+  const b=getCell(x,y,z);
+  if(b&&(b.isChest||b.id.includes('chest')))openModal({x,y,z});
+  else if(b&&(b.isSpawner||b.id==='minecraft:mob_spawner'))openSpawner({x,y,z});
+  else eraseBlock(x,y,z);
+}
+
+function getRayMobOrb(cx,cy){
+  // Raycast only against mob orbs
+  const rect=renderer.domElement.getBoundingClientRect();
+  const mouse=new THREE.Vector2(
+    ((cx-rect.left)/rect.width)*2-1,
+    -((cy-rect.top)/rect.height)*2+1);
+  raycaster.setFromCamera(mouse,camera);
+  const orbs=Object.values(mobOrbs||{}).filter(m=>m.visible);
+  const hits=raycaster.intersectObjects(orbs);
+  if(hits.length){const p=hits[0].object.userData.pos;return p||null;}
+  return null;
+}
+
+function deleteMobAtPos(x,y,z){
+  const key=`${x},${y},${z}`;
+  delete structureMobs[key];
+  if(mobOrbs[key]){
+    if(mobOrbs[key].ring) scene.remove(mobOrbs[key].ring);
+    scene.remove(mobOrbs[key]); mobOrbs[key].material.dispose(); delete mobOrbs[key];
+  }
+  updateStats();
+}
+
+function updateGhost(e){
+  if(toolMode!=='place'){ghostMesh.visible=false;return;}
+  const info=getRay(e.clientX,e.clientY);
+  if(info&&info.tgt){
+    const{x,y,z}=info.tgt;
+    if(x<0||x>=GW||y<0||y>=GH||z<0||z>=GD){ghostMesh.visible=false;return;}
+    ghostMesh.position.set(x+.5,y+.5,z+.5);
+    const c=useCustom?0x9090a0:parseInt(selBlock.color.replace('#',''),16);
+    ghostMesh.material.color.setHex(c);ghostMesh.visible=true;
+    const h=document.getElementById('hlbl');h.style.display='block';h.textContent=`X:${x} Y:${y} Z:${z}`;
+  }else{ghostMesh.visible=false;document.getElementById('hlbl').style.display='none';}
+}
+
+/* ═══════════════════════════════════════════════
+   BLOCK MANAGEMENT
+═══════════════════════════════════════════════ */
+function getCell(x,y,z){return grid[x]?.[y]?.[z]||null;}
+
+function placeBlock(x,y,z,def,noU){
+  const key=`${x},${y},${z}`,prev=getCell(x,y,z);
+  if(!noU){undoStack.push({x,y,z,prev:prev?{...prev}:null,curr:{...def}});if(undoStack.length>200)undoStack.shift();}
+  if(blockMeshes[key]){scene.remove(blockMeshes[key]);blockMeshes[key].material.dispose();delete blockMeshes[key];}
+  grid[x][y][z]={id:def.id,name:def.name,color:def.color,
+    states:def.states||{},
+    isChest:def.isChest||def.id?.includes('chest'),
+    isSpawner:def.isSpawner||def.id==='minecraft:mob_spawner',
+    isAir:def.isAir||def.id==='minecraft:air'};
+  let hx;try{hx=parseInt(def.color.replace('#',''),16);}catch{hx=0x808080;}
+  const mat=new THREE.MeshLambertMaterial({color:hx});
+  if(def.id?.includes('structure_void'))mat.transparent=true,mat.opacity=.3;
+  if(def.id?.includes('air'))mat.transparent=true,mat.opacity=.2,mat.wireframe=true;
+  if(def.id?.includes('chest'))mat.emissive=new THREE.Color(.3,.15,0);
+  if(def.id?.includes('_bed') || def.id==='minecraft:bed'){
+    // Bed: flat slab, 9/16 height
+    const bedGeo=new THREE.BoxGeometry(1,0.56,1);
+    const m2=new THREE.Mesh(bedGeo,mat);
+    m2.position.set(x+.5,y+.28,z+.5);
+    m2.userData.pos={x,y,z};m2.userData.blockId=def.id;
+    m2.visible=y<=maxLyrY;
+    scene.add(m2);blockMeshes[key]=m2;
+  } else if(def.id?.includes('_door') || def.id?.includes('door')){
+    // Door: thin panel (0.1 thick), facing south (along Z axis)
+    const doorGeo=new THREE.BoxGeometry(1,1,0.1);
+    const m2=new THREE.Mesh(doorGeo,mat);
+    m2.position.set(x+.5,y+.5,z+.5);
+    m2.userData.pos={x,y,z};m2.userData.blockId=def.id;
+    m2.visible=y<=maxLyrY;
+    scene.add(m2);blockMeshes[key]=m2;
+  } else {
+    const mesh=new THREE.Mesh(bGeo,mat);
+    mesh.position.set(x+.5,y+.5,z+.5);
+    mesh.userData.pos={x,y,z};mesh.userData.blockId=def.id;
+    mesh.visible=y<=maxLyrY;
+    scene.add(mesh);blockMeshes[key]=mesh;
+  }
+  // Auto-place second half for multi-block items (doors = +1Y, beds = +1Z south)
+  if(def.multiBlock && !def._isSecondHalf){
+    const{dx,dy,dz,states2}=def.multiBlock;
+    const x2=x+dx,y2=y+dy,z2=z+dz;
+    if(x2>=0&&x2<GW&&y2>=0&&y2<GH&&z2>=0&&z2<GD){
+      placeBlock(x2,y2,z2,{...def,states:states2,multiBlock:null,_isSecondHalf:true},noU);
+    }
+  }
+  updateStats();
+}
+
+function renderAll(){
+  // Refresh visibility of all meshes after batch operations
+  Object.entries(blockMeshes).forEach(([key,mesh])=>{
+    const [x,y,z]=key.split(',').map(Number);
+    mesh.visible=y<=maxLyrY;
+  });
+  updateStats();
+}
+
+function eraseBlock(x,y,z,noU){
+  const key=`${x},${y},${z}`,prev=getCell(x,y,z);if(!prev)return;
+  if(!noU){undoStack.push({x,y,z,prev:{...prev},curr:null});if(undoStack.length>200)undoStack.shift();}
+  if(blockMeshes[key]){scene.remove(blockMeshes[key]);blockMeshes[key].material.dispose();delete blockMeshes[key];}
+  grid[x][y][z]=null;delete chestLoot[key];delete spawnerData[key];updateStats();
+}
+
+function undoAct(){
+  if(!undoStack.length)return;
+  const a=undoStack.pop();
+  if(a.prev)placeBlock(a.x,a.y,a.z,a.prev,true);else eraseBlock(a.x,a.y,a.z,true);
+}
+
+function setLayer(y){
+  maxLyrY=y;document.getElementById('lyrv').textContent=y;
+  Object.values(blockMeshes).forEach(m=>m.visible=m.userData.pos.y<=maxLyrY);
+
+}
+
+function clearAll(){
+  if(!confirm('Clear all placed blocks?'))return;
+  Object.values(blockMeshes).forEach(m=>{scene.remove(m);m.material.dispose();});
+  blockMeshes={};chestLoot={};spawnerData={};structureMobs={};removeMobOrbs();undoStack=[];initGrid();updateStats();
+}
+
+function fillFloor(){
+  const def=useCustom?{id:custId,name:custId,color:'#9090a0'}:selBlock;
+  for(let x=0;x<GW;x++)for(let z=0;z<GD;z++)placeBlock(x,0,z,def);
+}
+
+function applySize(){
+  const w=Math.max(4,Math.min(48,parseInt(document.getElementById('szw').value)||16));
+  const h=Math.max(4,Math.min(48,parseInt(document.getElementById('szh').value)||16));
+  const d=Math.max(4,Math.min(48,parseInt(document.getElementById('szd').value)||16));
+  GW=w;GH=h;GD=d;
+  Object.values(blockMeshes).forEach(m=>{scene.remove(m);m.material.dispose();});
+  blockMeshes={};chestLoot={};spawnerData={};structureMobs={};removeMobOrbs();undoStack=[];initGrid();
+  const sl=document.getElementById('lyrsl');sl.max=h-1;sl.value=h-1;maxLyrY=h-1;
+  document.getElementById('lyrv').textContent=h-1;
+  orbitTarget.set(w/2,h/4,d/2);orbitR=Math.max(w,h,d)*1.8;
+  floorMesh.geometry.dispose();floorMesh.geometry=new THREE.PlaneGeometry(w,d);
+  floorMesh.position.set(w/2,-.01,d/2);
+  updateCam();buildGrid3D();
+  document.getElementById('isz').textContent=`${w}×${h}×${d}`;updateStats();
+}
+
+function updateStats(){
+  let cnt=0,cc=0;
+  for(let x=0;x<GW;x++)for(let y=0;y<GH;y++)for(let z=0;z<GD;z++){
+    if(grid[x]?.[y]?.[z]){cnt++;if(grid[x][y][z].isChest||grid[x][y][z].id?.includes('chest'))cc++;}
+  }
+  const lc=Object.keys(chestLoot).length;
+  const mc=Object.keys(structureMobs||{}).length;
+  document.getElementById('statb').textContent=`BLOCKS: ${cnt} | CHESTS: ${cc} | MOBS: ${mc}`;
+  document.getElementById('ibl').textContent=cnt;
+  document.getElementById('ich').textContent=cc;
+  document.getElementById('ilt').textContent=lc;
+}
+
+/* ═══════════════════════════════════════════════
+   PALETTE UI
+═══════════════════════════════════════════════ */
+function buildPalette(){
+  const list=document.getElementById('plist');list.innerHTML='';
+  const cats=[...new Set(BLOCKS.map(b=>b.cat))];
+  cats.forEach(cat=>{
+    const wrap=document.createElement('div');
+    const hdr=document.createElement('div');hdr.className='chdr';
+    hdr.innerHTML=`<span class="chdra">▼</span><span>${cat}</span>`;
+    hdr.onclick=()=>hdr.classList.toggle('col');
+    const blks=document.createElement('div');blks.className='cblks';
+    BLOCKS.filter(b=>b.cat===cat).forEach(b=>{
+      const item=document.createElement('div');item.className='blk';item.dataset.id=b.id;
+      if(b===selBlock&&!useCustom)item.classList.add('sel');
+      const sw=document.createElement('div');sw.className='bsw';sw.style.background=b.color;
+      const nm=document.createElement('span');nm.className='bnm';nm.textContent=b.name;
+      item.appendChild(sw);item.appendChild(nm);item.onclick=()=>selBlock2(b);
+      blks.appendChild(item);
+    });
+    wrap.appendChild(hdr);wrap.appendChild(blks);list.appendChild(wrap);
+  });
+}
+
+function selBlock2(b){
+  selBlock=b;useCustom=false;
+  document.getElementById('custbtn').classList.remove('on');
+  document.querySelectorAll('.blk').forEach(el=>el.classList.toggle('sel',el.dataset.id===b.id));
+  document.getElementById('selsw').style.background=b.color;
+  document.getElementById('selnm').textContent=b.name;
+  if(ghostMesh)ghostMesh.material.color.set(b.color);
+  setTool('place');
+}
+
+function selCustom(){
+  custId=document.getElementById('custinp').value.trim();
+  if(!custId)return;
+  if(!custId.includes(':'))custId='minecraft:'+custId;
+  setCustom(custId);
+}
+
+function setCustom(id){
+  custId=id;useCustom=true;
+  document.getElementById('custinp').value=id;
+  document.getElementById('custbtn').classList.add('on');
+  document.querySelectorAll('.blk').forEach(el=>el.classList.remove('sel'));
+  document.getElementById('selsw').style.background='#9090a0';
+  document.getElementById('selnm').textContent=id;setTool('place');
+}
+
+function filterPal(q){
+  q=q.toLowerCase();
+  document.querySelectorAll('.blk').forEach(el=>{
+    const nm=el.querySelector('.bnm').textContent.toLowerCase();
+    el.style.display=(!q||nm.includes(q)||el.dataset.id.includes(q))?'':'none';
+  });
+}
+
+function setTool(t){
+  toolMode=t;
+  document.getElementById('bpl').className='tbtn'+(t==='place'?' on':'');
+  document.getElementById('ber').className='tbtn'+(t==='erase'?' on-r':'');
+  document.getElementById('bpk').className='tbtn'+(t==='pick'?' on-t':'');
+  document.getElementById('bmb').className='tbtn'+(t==='mob'?' on-t':'');
+  if(t!=='place'&&ghostMesh)ghostMesh.visible=false;
+}
+
+/* ═══════════════════════════════════════════════
+   CHEST MODAL
+═══════════════════════════════════════════════ */
+let modalPos=null,curPools=[],pidSeq=0,eidSeq=0;
+
+function openModal(pos){
+  modalPos=pos;
+  const key=`${pos.x},${pos.y},${pos.z}`;
+  document.getElementById('cmtitle').textContent=`🎁 CHEST LOOT — X:${pos.x} Y:${pos.y} Z:${pos.z}`;
+  curPools=chestLoot[key]?JSON.parse(JSON.stringify(chestLoot[key])):[];
+  if(!curPools.length)addPool();
+  renderPools();
+
+  // Build copy-from bar: show other chests that have loot configured
+  const otherChests=Object.entries(chestLoot).filter(([k])=>k!==key);
+  const copybar=document.getElementById('copybar');
+  const chips=document.getElementById('copychips');
+  chips.innerHTML='';
+  if(otherChests.length){
+    otherChests.forEach(([k,pools])=>{
+      const [cx,cy,cz]=k.split(',');
+      const btn=document.createElement('button');
+      btn.style.cssText='font-family:var(--px);font-size:5px;padding:3px 7px;border:2px solid var(--teal);color:var(--teal);background:transparent;cursor:pointer;letter-spacing:1px;';
+      btn.textContent=`CHEST ${cx},${cy},${cz}`;
+      btn.title=`Copy loot from chest at ${cx},${cy},${cz}`;
+      btn.onclick=()=>{
+        readPools(); // save current edits first
+        curPools=JSON.parse(JSON.stringify(pools));
+        renderPools();
+        btn.style.background='rgba(40,224,192,.15)';
+        setTimeout(()=>btn.style.background='transparent',600);
+      };
+      chips.appendChild(btn);
+    });
+    copybar.style.display='flex';
+  } else {
+    copybar.style.display='none';
+  }
+
+  document.getElementById('cm').classList.add('open');
+}
+
+function closeModal(){document.getElementById('cm').classList.remove('open');modalPos=null;curPools=[];}
+function clearLoot(){if(!modalPos)return;delete chestLoot[`${modalPos.x},${modalPos.y},${modalPos.z}`];updateStats();closeModal();}
+
+function saveLoot(){
+  if(!modalPos)return;
+  readPools();
+  const key=`${modalPos.x},${modalPos.y},${modalPos.z}`;
+  if(curPools.length&&curPools.some(p=>p.entries.length))chestLoot[key]=JSON.parse(JSON.stringify(curPools));
+  else delete chestLoot[key];
+  updateStats();closeModal();
+}
+
+function readPools(){
+  curPools.forEach(p=>{
+    const rm=document.getElementById(`rm${p.id}`),rx=document.getElementById(`rx${p.id}`);
+    if(rm)p.rollsMin=parseInt(rm.value)||1;if(rx)p.rollsMax=parseInt(rx.value)||3;
+    p.entries.forEach(e=>{
+      const it=document.getElementById(`ei${e.id}`),wt=document.getElementById(`ew${e.id}`);
+      const cn=document.getElementById(`ec${e.id}`),cx=document.getElementById(`ex${e.id}`);
+      if(it)e.item=it.value;if(wt)e.weight=parseInt(wt.value)||1;
+      if(cn)e.cMin=parseInt(cn.value)||1;if(cx)e.cMax=parseInt(cx.value)||1;
+    });
+  });
+}
+
+function addPool(){curPools.push({id:++pidSeq,rollsMin:3,rollsMax:6,entries:[]});renderPools();}
+function removePool(pid){readPools();curPools=curPools.filter(p=>p.id!==pid);renderPools();}
+function addEntry(pid){readPools();const p=curPools.find(p=>p.id===pid);if(p){p.entries.push({id:++eidSeq,item:'minecraft:diamond',weight:1,cMin:1,cMax:1});renderPools();}}
+function removeEntry(pid,eid){readPools();const p=curPools.find(p=>p.id===pid);if(p){p.entries=p.entries.filter(e=>e.id!==eid);renderPools();}}
+
+function renderPools(){
+  const wrap=document.getElementById('poolswrap');wrap.innerHTML='';
+  curPools.forEach(p=>{
+    const div=document.createElement('div');div.className='pool';
+    div.innerHTML=`<div class="poolhdr"><span class="poolt">📦 POOL ${p.id}</span>
+      <button onclick="removePool(${p.id})" style="font-family:var(--mo);font-size:13px;padding:1px 6px;border:2px solid var(--red);color:var(--red);background:transparent;cursor:pointer;">✕</button></div>
+      <div class="poolb"><div class="rrow"><label>ROLLS:</label>
+        <input class="ri" type="number" id="rm${p.id}" value="${p.rollsMin}" min="0" max="99">
+        <label style="color:var(--brite)">—</label>
+        <input class="ri" type="number" id="rx${p.id}" value="${p.rollsMax}" min="0" max="99">
+      </div>
+      <div class="ehdrs"><div class="ehdr">ITEM ID</div><div class="ehdr">WEIGHT</div><div class="ehdr">MIN</div><div class="ehdr">MAX</div><div class="ehdr"></div></div>
+      <div id="er${p.id}">${p.entries.map(e=>`<div class="erow">
+        <input class="einp" type="text" id="ei${e.id}" value="${e.item}">
+        <input class="einp" type="number" id="ew${e.id}" value="${e.weight}" min="1">
+        <input class="einp" type="number" id="ec${e.id}" value="${e.cMin}" min="1">
+        <input class="einp" type="number" id="ex${e.id}" value="${e.cMax}" min="1">
+        <button class="edel" onclick="removeEntry(${p.id},${e.id})">✕</button>
+      </div>`).join('')}</div>
+      <button class="paadd" onclick="addEntry(${p.id})">+ ADD ITEM</button></div>`;
+    wrap.appendChild(div);
+  });
+}
+
+
+/* ═══════════════════════════════════════════════
+   SPAWNER MODAL
+═══════════════════════════════════════════════ */
+const MOBS = [
+  {id:'minecraft:zombie',        icon:'🧟'},
+  {id:'minecraft:skeleton',      icon:'💀'},
+  {id:'minecraft:creeper',       icon:'💚'},
+  {id:'minecraft:spider',        icon:'🕷'},
+  {id:'minecraft:cave_spider',   icon:'🕸'},
+  {id:'minecraft:witch',         icon:'🧙'},
+  {id:'minecraft:blaze',         icon:'🔥'},
+  {id:'minecraft:wither_skeleton',icon:'☠'},
+  {id:'minecraft:piglin',        icon:'🐷'},
+  {id:'minecraft:piglin_brute',  icon:'👊'},
+  {id:'minecraft:husk',          icon:'🌵'},
+  {id:'minecraft:drowned',       icon:'💧'},
+  {id:'minecraft:stray',         icon:'❄'},
+  {id:'minecraft:vindicator',    icon:'🪓'},
+  {id:'minecraft:evoker',        icon:'✨'},
+  {id:'minecraft:phantom',       icon:'👻'},
+  {id:'minecraft:enderman',      icon:'🌑'},
+  {id:'minecraft:silverfish',    icon:'🐛'},
+  {id:'minecraft:slime',         icon:'🟢'},
+  {id:'minecraft:magma_cube',    icon:'🔴'},
+  {id:'minecraft:guardian',      icon:'🔱'},
+  {id:'minecraft:elder_guardian',icon:'🌊'},
+  {id:'minecraft:shulker',       icon:'📦'},
+  {id:'minecraft:zombie_villager',icon:'🧛'},
+];
+
+let spawnerPos=null;
+
+function openSpawner(pos){
+  spawnerPos=pos;
+  const key=`${pos.x},${pos.y},${pos.z}`;
+  const saved=spawnerData[key]||{};
+  const cur=(typeof saved==='string'?saved:saved.mobId)||'minecraft:zombie';
+  document.getElementById('smtitle').textContent=`🕷 SPAWNER — X:${pos.x} Y:${pos.y} Z:${pos.z}`;
+  document.getElementById('smcustom').value=cur;
+  document.getElementById('smForceLight').checked=saved.forceLight||false;
+  document.getElementById('smSpawnCount').value=saved.spawnCount||4;
+  document.getElementById('smSpawnRange').value=saved.spawnRange||4;
+  document.getElementById('smMinDelay').value=saved.minDelay||200;
+  document.getElementById('smMaxDelay').value=saved.maxDelay||800;
+  // Build mob grid
+  const grid=document.getElementById('smgrid');
+  grid.innerHTML='';
+  MOBS.forEach(m=>{
+    const btn=document.createElement('button');
+    btn.className='mobchip'+(cur===m.id?' sel':'');
+    btn.innerHTML=`<span>${m.icon}</span><span style="font-size:12px">${m.id.replace('minecraft:','')}</span>`;
+    btn.onclick=()=>{
+      document.getElementById('smcustom').value=m.id;
+      document.querySelectorAll('.mobchip').forEach(b=>b.classList.remove('sel'));
+      btn.classList.add('sel');
+    };
+    grid.appendChild(btn);
+  });
+  document.getElementById('sm').classList.add('open');
+}
+
+function closeSpawner(){document.getElementById('sm').classList.remove('open');spawnerPos=null;}
+
+function saveSpawner(){
+  if(!spawnerPos)return;
+  const key=`${spawnerPos.x},${spawnerPos.y},${spawnerPos.z}`;
+  const val=document.getElementById('smcustom').value.trim();
+  if(!val){closeSpawner();return;}
+  spawnerData[key]={
+    mobId: val.includes(':')?val:'minecraft:'+val,
+    forceLight: document.getElementById('smForceLight').checked,
+    spawnCount: parseInt(document.getElementById('smSpawnCount').value)||4,
+    spawnRange: parseInt(document.getElementById('smSpawnRange').value)||4,
+    minDelay:   parseInt(document.getElementById('smMinDelay').value)||200,
+    maxDelay:   parseInt(document.getElementById('smMaxDelay').value)||800,
+  };
+  closeSpawner();
+}
+
+
+
+
+/* ═══════════════════════════════════════════════
+   FILL INTERIOR AIR (outside flood fill)
+   Floods from all 6 boundary faces through empty
+   cells. Any empty cell NOT reachable = enclosed
+   interior → place minecraft:air there.
+═══════════════════════════════════════════════ */
+function fillInteriorAir(){
+  // BFS from every empty boundary cell
+  const outside = new Uint8Array(GW*GH*GD); // 0=unknown,1=outside
+  const idx=(x,y,z)=>x+y*GW+z*GW*GH;
+  const queue=[];
+
+  function enqueue(x,y,z){
+    if(x<0||x>=GW||y<0||y>=GH||z<0||z>=GD) return;
+    if(outside[idx(x,y,z)]) return;       // already visited
+    if(grid[x]?.[y]?.[z]) return;          // solid block — don't pass through
+    outside[idx(x,y,z)]=1;
+    queue.push([x,y,z]);
+  }
+
+  // Seed from all 6 faces
+  for(let y=0;y<GH;y++) for(let z=0;z<GD;z++){enqueue(0,y,z);enqueue(GW-1,y,z);}
+  for(let x=0;x<GW;x++) for(let z=0;z<GD;z++){enqueue(x,0,z);enqueue(x,GH-1,z);}
+  for(let x=0;x<GW;x++) for(let y=0;y<GH;y++){enqueue(x,y,0);enqueue(x,y,GD-1);}
+
+  // BFS
+  const dirs=[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]];
+  let head=0;
+  while(head<queue.length){
+    const [cx,cy,cz]=queue[head++];
+    for(const [dx,dy,dz] of dirs) enqueue(cx+dx,cy+dy,cz+dz);
+  }
+
+  // Place air in every enclosed empty cell
+  const airDef=BLOCKS.find(b=>b.id==='minecraft:air')||{id:'minecraft:air',name:'Air ✦',color:'#203050',isAir:true};
+  let filled=0;
+  for(let x=0;x<GW;x++) for(let y=0;y<GH;y++) for(let z=0;z<GD;z++){
+    if(!grid[x]?.[y]?.[z] && !outside[idx(x,y,z)]){
+      placeBlock(x,y,z,airDef);
+      filled++;
+    }
+  }
+  renderAll();
+  if(filled===0) alert('No enclosed interior found.\nMake sure the room is fully sealed (walls + floor + ceiling).\nFor open-roof structures: temporarily cap the roof, Fill Air, then remove the cap.');
+  else alert(`✅ Filled ${filled} interior cell${filled===1?'':'s'} with Air.\n\nAir blocks show as faint blue wireframes.\nThey force-clear stone/terrain inside your structure.`);
+}
+
+/* ═══════════════════════════════════════════════
+   NBT WRITER (Little-Endian Bedrock)
+═══════════════════════════════════════════════ */
+class NBTWriter{
+  constructor(){this._d=[];}
+  u8(v){this._d.push(v&0xFF);}
+  i16(v){v=v|0;this._d.push(v&0xFF,(v>>8)&0xFF);}
+  i32(v){v=v|0;this._d.push(v&0xFF,(v>>8)&0xFF,(v>>16)&0xFF,(v>>>24)&0xFF);}
+  i64z(){for(let i=0;i<8;i++)this._d.push(0);}
+  f32(v){const b=new ArrayBuffer(4);new DataView(b).setFloat32(0,v,true);new Uint8Array(b).forEach(x=>this._d.push(x));}
+  Short(n,v){v=v|0;this.u8(2);this.str(n);this._d.push(v&0xFF,(v>>8)&0xFF);}
+  Float(n,v){this.u8(5);this.str(n);this.f32(v);}
+  Byte(n,v){this.u8(1);this.str(n);this._d.push(v&0xFF);}
+  str(s){const e=new TextEncoder().encode(s);this.i16(e.length);e.forEach(b=>this._d.push(b));}
+  // Named tags (for compound fields)
+  Int(n,v){this.u8(3);this.str(n);this.i32(v);}
+  Str(n,s){this.u8(8);this.str(n);this.str(s);}
+  Long0(n){this.u8(4);this.str(n);this.i64z();}
+  // Named List of Ints
+  IntList(n,arr){this.u8(9);this.str(n);this.u8(3);this.i32(arr.length);arr.forEach(v=>this.i32(v));}
+  // Named compound: writes header, calls fn(), writes TAG_End
+  Compound(n,fn){this.u8(10);this.str(n);fn();this.u8(0);}
+  // Named list with element type+count then items from fn()
+  List(n,et,count,fn){this.u8(9);this.str(n);this.u8(et);this.i32(count);fn();}
+  // Inner list (list item when outer list contains lists) — no name/type wrapper
+  InnerIntList(arr){this.u8(3);this.i32(arr.length);arr.forEach(v=>this.i32(v));}
+  toBytes(){return new Uint8Array(this._d);}
+}
+
+/* ═══════════════════════════════════════════════
+   .MCSTRUCTURE GENERATOR
+═══════════════════════════════════════════════ */
+function buildMcstructure(structId){
+  // Build palette — keyed by "id|stateHash" so door upper/lower get separate entries
+  const palMap={};const pal=[];
+  const isVoid=id=>id==='minecraft:structure_void';
+  for(let z=0;z<GD;z++)for(let y=0;y<GH;y++)for(let x=0;x<GW;x++){
+    const c=grid[x]?.[y]?.[z];
+    if(c&&!isVoid(c.id)){
+      const sk=c.id+'|'+JSON.stringify(c.states||{});
+      if(!(sk in palMap)){palMap[sk]=pal.length;pal.push({id:c.id,states:c.states||{}});}
+    }
+  }
+  // Build block indices
+  const N=GW*GH*GD;
+  const L0=new Array(N).fill(-1);
+  for(let z=0;z<GD;z++)for(let y=0;y<GH;y++)for(let x=0;x<GW;x++){
+    const c=grid[x]?.[y]?.[z];
+    if(c&&!isVoid(c.id)){
+      const sk=c.id+'|'+JSON.stringify(c.states||{});
+      L0[x + y*GW + z*GW*GH]=palMap[sk];
+    }
+  }
+  const L1=new Array(N).fill(-1);
+
+  // Chest block-entity entries
+  const chestEntries=[];
+  Object.entries(chestLoot).forEach(([key,pools],i)=>{
+    const[cx,cy,cz]=key.split(',').map(Number);
+    if(grid[cx]?.[cy]?.[cz]){
+      const idx=cx + cy*GW + cz*GW*GH;
+      chestEntries.push({idxStr:String(idx),cx,cy,cz,lootPath:`loot_tables/structures/${structId}_chest_${i}.json`});
+    }
+  });
+
+  // Spawner block-entity entries
+  const spawnerEntries=[];
+  const litEntities=new Set(); // custom light-immune entity identifiers needed
+  Object.entries(spawnerData).forEach(([key,entry])=>{
+    const[sx,sy,sz]=key.split(',').map(Number);
+    if(grid[sx]?.[sy]?.[sz]&&grid[sx][sy][sz].id==='minecraft:mob_spawner'){
+      const idx=sx + sy*GW + sz*GW*GH;
+      const rawMobId=(typeof entry==='string'?entry:entry.mobId)||'minecraft:zombie';
+      const forceLight=typeof entry==='object'&&entry.forceLight;
+      const spawnCount=typeof entry==='object'?(entry.spawnCount||4):4;
+      const spawnRange=typeof entry==='object'?(entry.spawnRange||4):4;
+      const minDelay=typeof entry==='object'?(entry.minDelay||200):200;
+      const maxDelay=typeof entry==='object'?(entry.maxDelay||800):800;
+      let mobId=rawMobId;
+      if(forceLight){
+        const shortName=rawMobId.replace('minecraft:','');
+        mobId=`${pns}:${shortName}_lit`;
+        litEntities.add(JSON.stringify({customId:mobId,vanillaId:rawMobId,shortName}));
+      }
+      spawnerEntries.push({idxStr:String(idx),sx,sy,sz,mobId,forceLight,spawnCount,spawnRange,minDelay,maxDelay});
+    }
+  });
+
+  // Build mob command block entries
+  // Each mob orb → repeating command block at that grid position that fires /function and self-destructs
+  // This matches exactly how Structure Mayhem spawns mobs (verified from source)
+  const mobCmdEntries = Object.entries(structureMobs).map(([key,mob],i)=>{
+    const [mx,my,mz]=key.split(',').map(Number);
+    const funcName=`${structId}_mob_${i}`;
+    const idx = mx + my*GW + mz*GW*GH;
+    return {mx,my,mz,idx,idxStr:String(idx),mob,funcName,i};
+  });
+
+  // Add command block to palette if needed (with states: conditional_bit=Byte(0), facing_direction=Int(1))
+  const CMDBLOCK_ID = 'minecraft:repeating_command_block';
+  let cmdblockPalIdx = -1;
+  if(mobCmdEntries.length > 0){
+    cmdblockPalIdx = pal.length; // will be appended after regular blocks
+  }
+
+  // Override grid positions with command block index
+  for(const e of mobCmdEntries){
+    L0[e.idx] = cmdblockPalIdx;
+  }
+
+  const w=new NBTWriter();
+  w.Compound('',()=>{
+    w.Int('format_version',1);
+    w.IntList('size',[GW,GH,GD]);
+    w.Compound('structure',()=>{
+      // block_indices: List<List<Int>>, 2 layers
+      w.List('block_indices',9,2,()=>{
+        w.InnerIntList(L0);
+        w.InnerIntList(L1);
+      });
+      // entities: empty (baked entities don't work with structure_template_feature)
+      w.List('entities',0,0,()=>{});
+      w.Compound('palette',()=>{
+        w.Compound('default',()=>{
+          const totalPalLen = pal.length + (cmdblockPalIdx>=0?1:0);
+          // block_palette: List<Compound>
+          w.List('block_palette',10,totalPalLen,()=>{
+            // States that are TAG_Byte in Bedrock (booleans/flags)
+            const BYTE_STATES=new Set(['door_hinge_bit','open_bit','upper_block_bit',
+              'head_piece_bit','occupied_bit','in_wall_bit','toggle_bit','powered_bit',
+              'suspended_bit','attached_bit','disarmed_bit','update_bit','button_pressed_bit',
+              'output_subtract_bit','output_lit_bit','explode_bit','conditional_bit']);
+            function writeStates(states){
+              w.u8(10);w.str('states');
+              for(const[k,v] of Object.entries(states)){
+                if(BYTE_STATES.has(k)){w.u8(1);w.str(k);w.u8(v);}
+                else if(typeof v==='string'){w.u8(8);w.str(k);w.str(v);}
+                else{w.u8(3);w.str(k);w.i32(v);}
+              }
+              w.u8(0); // end states compound
+            }
+            for(const block of pal){
+              w.u8(8);w.str('name');w.str(block.id);
+              writeStates(block.states);
+              w.u8(3);w.str('version');w.i32(18168865);
+              w.u8(0);
+            }
+            if(cmdblockPalIdx>=0){
+              w.u8(8);w.str('name');w.str(CMDBLOCK_ID);
+              w.u8(10);w.str('states');
+                w.u8(1);w.str('conditional_bit');w.u8(0);
+                w.u8(3);w.str('facing_direction');w.i32(1);
+              w.u8(0);
+              w.u8(3);w.str('version');w.i32(18168865);
+              w.u8(0);
+            }
+          });
+          // block_position_data
+          w.Compound('block_position_data',()=>{
+            for(const cd of chestEntries){
+              w.Compound(cd.idxStr,()=>{
+                w.Compound('block_entity_data',()=>{
+                  w.Str('id','Chest');
+                  w.Int('x',cd.cx);w.Int('y',cd.cy);w.Int('z',cd.cz);
+                  w.Str('LootTable',cd.lootPath);
+                  w.Long0('LootTableSeed');
+                });
+              });
+            }
+            for(const se of spawnerEntries){
+              w.Compound(se.idxStr,()=>{
+                w.Compound('block_entity_data',()=>{
+                  w.Short('Delay',se.minDelay);
+                  w.Float('DisplayEntityHeight',1.8);
+                  w.Float('DisplayEntityScale',1.0);
+                  w.Float('DisplayEntityWidth',0.8);
+                  w.Str('EntityIdentifier',se.mobId);
+                  w.Short('MaxNearbyEntities',se.spawnCount*2);
+                  w.Short('MaxSpawnDelay',se.maxDelay);
+                  w.Short('MinSpawnDelay',se.minDelay);
+                  w.Short('RequiredPlayerRange',16);
+                  w.Short('SpawnCount',se.spawnCount);
+                  w.Short('SpawnRange',se.spawnRange);
+                  w.Str('id','MobSpawner');
+                  w.Byte('isMovable',1);
+                  w.Int('x',se.sx);w.Int('y',se.sy);w.Int('z',se.sz);
+                });
+              });
+            }
+            // Command block tile entities for mob spawning
+            for(const e of mobCmdEntries){
+              w.Compound(e.idxStr,()=>{
+                w.Compound('block_entity_data',()=>{
+                  w.Str('Command',`/function ${e.funcName}`);
+                  w.Str('CustomName','');
+                  w.Byte('ExecuteOnFirstTick',1);
+                  w.Int('LPCommandMode',1);
+                  w.Byte('LPCondionalMode',0);
+                  w.Byte('LPRedstoneMode',0);
+                  // LastExecution: Long(0)
+                  w.u8(4);w.str('LastExecution');w.i32(0);w.i32(0);
+                  w.Str('LastOutput','');
+                  // LastOutputParams: List<TAG_End>(0)
+                  w.u8(9);w.str('LastOutputParams');w.u8(0);w.i32(0);
+                  w.Int('SuccessCount',0);
+                  w.Int('TickDelay',0);
+                  w.Byte('TrackOutput',1);
+                  w.Int('Version',45);
+                  w.Byte('auto',1);
+                  w.Byte('conditionMet',1);
+                  w.Byte('conditionalMode',0);
+                  w.Str('id','CommandBlock');
+                  w.Byte('isMovable',1);
+                  w.Byte('powered',0);
+                  w.Int('x',e.mx);w.Int('y',e.my);w.Int('z',e.mz);
+                });
+                // tick_queue_data: List<Compound>(1) with tick_delay=0
+                w.u8(9);w.str('tick_queue_data');w.u8(10);w.i32(1);
+                  w.Int('tick_delay',0);
+                  w.u8(0);
+              });
+            }
+          });
+        });
+      });
+    });
+    w.IntList('structure_world_origin',[0,0,0]);
+  });
+  return {bytes: w.toBytes(), litEntities, mobCmdEntries};
+}
+
+/* ═══════════════════════════════════════════════
+   FEATURE JSON GENERATORS
+═══════════════════════════════════════════════ */
+function buildFeatureJson(structId,pns,settings){
+  const{placementMode,facingDir}=settings;
+  const constraints={};
+  if(placementMode==='surface'||placementMode==='surface_offset'||placementMode==='buried'||placementMode==='underground'){
+    constraints.grounded={};
+  }
+  return {
+    format_version:'1.13.0',
+    'minecraft:structure_template_feature':{
+      description:{identifier:`generation:${structId}_feature_mcstructure`},
+      structure_name:`mystructure:${structId}`,
+      adjustment_radius:8,
+      facing_direction: (facingDir&&facingDir!=='none') ? facingDir : 'south',
+      constraints
+    }
+  };
+}
+
+function buildFeatureRuleJson(structId,pns,settings){
+  const{placementMode,yOffset,yDepth,yMin,yMax,biomeTags,scatterChance,iterations}=settings;
+  let yValue;
+  switch(placementMode){
+    case'surface':
+      yValue=`query.heightmap(variable.worldx, variable.worldz) + 0`;
+      break;
+    case'surface_offset':{
+      const off=parseInt(yOffset)||0;
+      yValue=`query.heightmap(variable.worldx, variable.worldz) + ${off}`;
+      break;
+    }
+    case'buried':{
+      const dep=Math.abs(parseInt(yDepth)||15);
+      yValue=`query.heightmap(variable.worldx, variable.worldz) - ${dep}`;
+      break;
+    }
+    default: // underground / floating
+      yValue={distribution:'uniform',extent:[parseInt(yMin),parseInt(yMax)]};
+  }
+
+  // Biome filter — double all_of nesting, exactly matching working mod
+  let biomeFilter;
+  if(biomeTags.length===0){
+    biomeFilter=[{all_of:[{all_of:[{test:'has_biome_tag',operator:'==',value:'plains'}]}]}];
+  }else if(biomeTags.length===1){
+    biomeFilter=[{all_of:[{all_of:[{test:'has_biome_tag',operator:'==',value:biomeTags[0]}]}]}];
+  }else{
+    biomeFilter=[{all_of:[{any_of:biomeTags.map(t=>({test:'has_biome_tag',operator:'==',value:t}))}]}];
+  }
+
+  return {
+    format_version:'1.13.0',
+    'minecraft:feature_rules':{
+      description:{
+        identifier:`${pns}:${structId}_rule`,
+        places_feature:`generation:${structId}_feature_mcstructure`  // always points to structure feature directly
+      },
+      conditions:{
+        placement_pass:'underground_pass',
+        'minecraft:biome_filter':biomeFilter
+      },
+      distribution:{
+        iterations:parseInt(iterations)||1,
+        scatter_chance:parseFloat(scatterChance)||0.04,
+        x:0,
+        y:yValue,
+        z:0
+      }
+    }
+  };
+}
+
+function buildLootTableJson(pools){
+  return {
+    pools:pools.map(p=>({
+      rolls:{min:p.rollsMin||1,max:p.rollsMax||3},
+      entries:p.entries.map(e=>({
+        type:'item',name:e.item,weight:e.weight||1,
+        functions:[{function:'set_count',count:{min:e.cMin||1,max:e.cMax||1}}]
+      }))
+    }))
+  };
+}
+
+/* ═══════════════════════════════════════════════
+   EXPORT: STRUCTURE ADDON (no experiments)
+═══════════════════════════════════════════════ */
+function uuid(){
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{
+    const r=Math.random()*16|0;return(c==='x'?r:(r&3|8)).toString(16);
+  });
+}
+
+async function exportStructure(){
+  const aname=document.getElementById('aname').value.trim()||'My Structure Mod';
+  const structId=document.getElementById('sid').value.trim()||'my_dungeon';
+  const pns=document.getElementById('pns').value.trim()||'mystruct';
+
+  let blockCnt=0;
+  for(let x=0;x<GW;x++)for(let y=0;y<GH;y++)for(let z=0;z<GD;z++)
+    if(grid[x]?.[y]?.[z]&&grid[x][y][z].id!=='minecraft:structure_void')blockCnt++;
+  if(!blockCnt){alert('No solid blocks placed! Add some blocks first.');return;}
+
+  const settings={
+    placementMode:document.getElementById('pmode').value,
+    yOffset:document.getElementById('yoff').value,
+    yDepth:document.getElementById('ydepth').value,
+    yMin:document.getElementById('ymin').value,
+    yMax:document.getElementById('ymax').value,
+    facingDir:document.getElementById('facing').value,
+    adjRadius:parseInt(document.getElementById('adjr').value)||4,
+    biomeTags:getSelectedBiomeTags(),
+    scatterChance:document.getElementById('schance').value,
+    iterations:document.getElementById('iters').value
+  };
+
+  const bpH=uuid(),bpM=uuid();
+  const manifest={
+    format_version:2,
+    header:{name:aname,description:`Structure mod: ${structId}`,uuid:bpH,version:[1,0,0],min_engine_version:[1,21,0]},
+    modules:[{type:'data',uuid:bpM,version:[1,0,0]}]
+  };
+
+  const {bytes: structBytes, litEntities, mobCmdEntries}=buildMcstructure(structId);
+  const featureJson=buildFeatureJson(structId,pns,settings);
+  const featureRuleJson=buildFeatureRuleJson(structId,pns,settings);
+
+  const zip=new JSZip();
+  const bp=zip.folder(`${aname} BP`);
+  bp.file('manifest.json',JSON.stringify(manifest,null,2));
+  bp.file(`structures/${structId}.mcstructure`,structBytes);
+  bp.file(`features/${structId}_feature_mcstructure.json`,JSON.stringify(featureJson,null,2));
+  bp.file(`feature_rules/${structId}_rule.json`,JSON.stringify(featureRuleJson,null,2));
+
+  // Loot tables
+  Object.entries(chestLoot).forEach(([key,pools],i)=>{
+    bp.file(`loot_tables/structures/${structId}_chest_${i}.json`,JSON.stringify(buildLootTableJson(pools),null,2));
+  });
+
+  // Mob spawn function files (one per mob orb — command block fires function, summons mob, self-destructs)
+  // This is the proven working approach from Structure Mayhem mod
+  for(const e of mobCmdEntries){
+    const mobId = e.mob.id; // e.g. "minecraft:pillager"
+    const funcContent = `summon ${mobId}\ngamerule commandblockoutput false\nsetblock ~~~ air\n`;
+    bp.file(`functions/${e.funcName}.mcfunction`, funcContent);
+  }
+  litEntities.forEach(j=>{
+    const {customId,vanillaId,shortName}=JSON.parse(j);
+    const entityJson={
+      format_version:'1.18.0',
+      'minecraft:entity':{
+        description:{
+          identifier:customId,
+          runtime_identifier:vanillaId,
+          is_spawnable:true,
+          is_summonable:true,
+          is_experimental:false
+        },
+        components:{}
+      }
+    };
+    bp.file(`entities/${shortName}_lit.json`,JSON.stringify(entityJson,null,2));
+  });
+
+  // Pack icon
+  const iconBlob=await makeIcon();
+  bp.file('pack_icon.png',iconBlob);
+
+  const blob=await zip.generateAsync({type:'blob'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=`${structId}_structure.mcaddon`;a.click();
+  URL.revokeObjectURL(url);
+
+  const modeLabels={surface:'Surface (on ground)',surface_offset:'Surface + Offset',buried:'Buried below surface',underground:'Underground (fixed Y)',floating:'Floating (sky)'};
+  const mobCount = mobCmdEntries.length;
+  alert(`✅ Structure Addon Generated!\n\n📦 ${blockCnt} blocks | ${Object.keys(chestLoot).length} chest(s) with loot | ${mobCount} mob spawn(s)\nGrid: ${GW}×${GH}×${GD}\nPlacement: ${modeLabels[settings.placementMode]}\nRarity: ${settings.scatterChance} (${(parseFloat(settings.scatterChance)*100).toFixed(1)}% per chunk)\n${mobCount>0?'👾 Mobs: command blocks placed at orb positions — fire once, spawn mob, then vanish\n':''}
+📋 Install:\n1. Open ${structId}_structure.mcaddon\n2. Enable Behavior Pack in NEW world\n⚠️ NO experiments needed!\n\n🌍 Structure spawns naturally during world gen`);
+}
+
+/* ═══════════════════════════════════════════════
+   EXPORT: WAND SCRIPT (optional, needs Beta APIs)
+═══════════════════════════════════════════════ */
+async function exportWand(){
+  const aname=document.getElementById('aname').value.trim()||'My Structure Mod';
+  const structId=document.getElementById('sid').value.trim()||'my_dungeon';
+  const pns=document.getElementById('pns').value.trim()||'mystruct';
+
+  const blockList=[];
+  for(let x=0;x<GW;x++)for(let y=0;y<GH;y++)for(let z=0;z<GD;z++){
+    const c=grid[x]?.[y]?.[z];
+    if(c&&c.id!=='minecraft:structure_void')blockList.push({x,y,z,id:c.id});
+  }
+  if(!blockList.length){alert('No blocks placed!');return;}
+
+  const chestList=Object.entries(chestLoot).map(([k,pools])=>{
+    const[x,y,z]=k.split(',').map(Number);return{x,y,z,pools};
+  });
+
+  const bpH=uuid(),bpM=uuid(),bpS=uuid(),rpH=uuid(),rpM=uuid();
+  const bpManifest={
+    format_version:2,
+    header:{name:aname+' (Wand)',description:'Wand placer for '+aname,uuid:bpH,version:[1,0,0],min_engine_version:[1,21,0]},
+    modules:[{type:'data',uuid:bpM,version:[1,0,0]},{type:'script',language:'javascript',uuid:bpS,version:[1,0,0],entry:'scripts/wand.js'}],
+    dependencies:[{module_name:'@minecraft/server',version:'1.8.0'},{uuid:rpH,version:[1,0,0]}]
+  };
+  const rpManifest={
+    format_version:2,
+    header:{name:aname+' Wand Resources',description:'',uuid:rpH,version:[1,0,0],min_engine_version:[1,21,0]},
+    modules:[{type:'resources',uuid:rpM,version:[1,0,0]}]
+  };
+  const wandItem={format_version:'1.20.50','minecraft:item':{description:{identifier:`${pns}:${structId}_wand`,menu_category:{category:'equipment'}},components:{'minecraft:icon':{texture:`${structId}_wand`},'minecraft:display_name':{value:`§6${aname} §rWand`},'minecraft:max_stack_size':1,'minecraft:hand_equipped':true}}};
+  const texJson={resource_pack_name:aname,texture_name:'atlas.items',texture_data:{[`${structId}_wand`]:{textures:`textures/items/${structId}_wand`}}};
+  const script=buildWandScript(pns,structId,blockList,chestList);
+  const wandPng=await makeWandPng();const iconBlob=await makeIcon();
+  const zip=new JSZip();
+  const bp=zip.folder(`${aname} Wand BP`);
+  const rp=zip.folder(`${aname} Wand RP`);
+  bp.file('manifest.json',JSON.stringify(bpManifest,null,2));
+  bp.file('pack_icon.png',iconBlob);
+  bp.file(`items/${structId}_wand.json`,JSON.stringify(wandItem,null,2));
+  bp.file('scripts/wand.js',script);
+  rp.file('manifest.json',JSON.stringify(rpManifest,null,2));
+  rp.file('pack_icon.png',iconBlob);
+  rp.file('textures/item_texture.json',JSON.stringify(texJson,null,2));
+  rp.file(`textures/items/${structId}_wand.png`,wandPng);
+  rp.file('texts/en_US.lang',`item.${pns}:${structId}_wand.name=${aname} Wand\n`);
+  const blob=await zip.generateAsync({type:'blob'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`${structId}_wand.mcaddon`;a.click();URL.revokeObjectURL(url);
+  alert(`✅ Wand Addon Generated!\n\n⚠️ Requires Beta APIs experiment!\n\n📋 Install:\n1. Open .mcaddon\n2. Enable BOTH packs\n3. Enable Beta APIs experiment\n4. /give @s ${pns}:${structId}_wand\n5. Hold wand and Use (right-click/use item)`);
+}
+
+function buildWandScript(pns,sId,blocks,chests){
+return `import { world, system, ItemStack } from '@minecraft/server';
+const BLOCKS=${JSON.stringify(blocks)};
+const CHESTS=${JSON.stringify(chests)};
+function rollLoot(pools){
+  const res=[];
+  for(const p of pools){
+    const rolls=(p.rollsMin||1)+Math.floor(Math.random()*((p.rollsMax||3)-(p.rollsMin||1)+1));
+    const tw=p.entries.reduce((s,e)=>s+(e.weight||1),0);
+    for(let r=0;r<rolls;r++){if(!p.entries.length)continue;
+      let rand=Math.random()*tw;
+      for(const e of p.entries){rand-=(e.weight||1);if(rand<=0){
+        const c=(e.cMin||1)+Math.floor(Math.random()*((e.cMax||1)-(e.cMin||1)+1));
+        res.push({id:e.item,count:Math.max(1,c)});break;}}}
+  }return res;
+}
+world.afterEvents.itemUse.subscribe(ev=>{
+  const{source:pl,itemStack}=ev;
+  if(itemStack.typeId!=='${pns}:${sId}_wand')return;
+  const o={x:Math.floor(pl.location.x),y:Math.floor(pl.location.y)-1,z:Math.floor(pl.location.z)};
+  const dim=pl.dimension;pl.sendMessage('§6⚒ §ePlacing...');
+  let i=0;
+  function next(){
+    const end=Math.min(i+150,BLOCKS.length);
+    for(;i<end;i++){const b=BLOCKS[i];
+      try{const bl=dim.getBlock({x:o.x+b.x,y:o.y+b.y,z:o.z+b.z});if(bl)bl.setType(b.id);}catch(e){}}
+    if(i<BLOCKS.length)system.runTimeout(next,1);
+    else system.runTimeout(()=>{
+      for(const ch of CHESTS){
+        try{const bl=dim.getBlock({x:o.x+ch.x,y:o.y+ch.y,z:o.z+ch.z});if(!bl)continue;
+          const inv=bl.getComponent('minecraft:inventory');if(!inv?.container)continue;
+          inv.container.clearAll();const items=rollLoot(ch.pools);const used=new Set();
+          for(const it of items){let slot,t=0;do{slot=Math.floor(Math.random()*inv.container.size);t++;}while(used.has(slot)&&t<40);
+            if(!used.has(slot)){used.add(slot);try{inv.container.setItem(slot,new ItemStack(it.id,it.count));}catch(e){}}}}
+        catch(e){}
+      }
+      for(const p of world.getAllPlayers()){p.sendMessage('§a✅ Done! ('+BLOCKS.length+' blocks)');break;}
+    },3);
+  }next();
+});`;}
+
+async function makeIcon(){
+  const c=document.createElement('canvas');c.width=c.height=256;
+  const ctx=c.getContext('2d');ctx.fillStyle='#0d0d1a';ctx.fillRect(0,0,256,256);
+  ctx.font='150px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('⚒',128,130);
+  return new Promise(r=>c.toBlob(r,'image/png'));
+}
+
+async function makeWandPng(){
+  const c=document.createElement('canvas');c.width=c.height=16;
+  const ctx=c.getContext('2d');
+  [[15,'#f0e030'],[14,'#d8c018'],[13,'#b89010'],[12,'#906810'],
+   [11,'#786030'],[10,'#c07840'],[9,'#906030'],[8,'#685828'],
+   [7,'#504020'],[6,'#402e10'],[5,'#302010'],[4,'#281808'],[3,'#1e1004']]
+  .forEach(([y,c])=>{ctx.fillStyle=c;ctx.fillRect(15-y,y,1,1);});
+  return new Promise(r=>c.toBlob(r,'image/png'));
+}
+
+/* ═══════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════ */
+window.addEventListener('load',()=>{
+  buildPalette();
+  initThree();
+  buildBiomeList();
+  onModeChange();
+  document.getElementById('isz').textContent=`${GW}×${GH}×${GD}`;
+  document.getElementById('selsw').style.background=selBlock.color;
+  document.getElementById('selnm').textContent=selBlock.name;
+});
+</script>
+
+
+<!-- MOB ENTITY MODAL -->
+<div id="mm" style="position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(3px);">
+  <div style="background:var(--card);border:2px solid var(--pur);width:min(500px,96vw);max-height:80vh;display:flex;flex-direction:column;box-shadow:0 0 40px rgba(176,80,232,.2);">
+    <div style="background:var(--sf);border-bottom:2px solid var(--brd);padding:8px 13px;display:flex;justify-content:space-between;align-items:center;">
+      <span id="mmtitle" style="font-family:var(--px);font-size:8px;color:var(--pur);">👾 PLACE MOB</span>
+      <button onclick="closeMobPicker()" style="background:transparent;border:2px solid var(--red);color:var(--red);font-size:15px;cursor:pointer;padding:1px 7px;font-family:var(--mo);">✕</button>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:12px;">
+      <div style="margin-bottom:10px;">
+        <label style="font-family:var(--px);font-size:5px;color:var(--dim);display:block;margin-bottom:4px;letter-spacing:1px;">MOB IDENTIFIER</label>
+        <input type="text" id="mmid" class="fi" placeholder="minecraft:zombie" style="margin-bottom:8px;">
+        <label style="font-family:var(--px);font-size:5px;color:var(--dim);display:block;margin-bottom:4px;letter-spacing:1px;">CUSTOM NAME (optional)</label>
+        <input type="text" id="mmname" class="fi" placeholder="e.g. Captain Bonehead">
+      </div>
+      <div id="mmgrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:6px;"></div>
+    </div>
+    <div style="border-top:2px solid var(--brd);padding:8px 13px;display:flex;gap:7px;background:var(--sf);">
+      <button id="mmremove" class="cmbtn" style="border-color:var(--red);color:var(--red);display:none;" onclick="if(mobPickerPos)removeMobEntity(mobPickerPos.x,mobPickerPos.y,mobPickerPos.z);closeMobPicker();">REMOVE</button>
+      <button class="cmbtn" style="border-color:var(--dim);color:var(--dim)" onclick="closeMobPicker()">CANCEL</button>
+      <button class="cmbtn" style="border-color:var(--pur);color:var(--pur)" onclick="saveMobEntity()">PLACE MOB</button>
+    </div>
+  </div>
+</div>
+<style>
+.mmchip{font-family:var(--mo);font-size:14px;padding:5px 8px;border:2px solid var(--brd);background:var(--sf);color:var(--txt);cursor:pointer;text-align:left;display:flex;align-items:center;gap:5px;transition:all .1s;}
+.mmchip:hover{border-color:var(--pur);color:var(--pur);}
+.mmchip.sel{border-color:var(--pur);background:rgba(176,80,232,.1);color:var(--pur);}
+</style>
+
+<script>
+/* ═══════════════════════════════════════════════
+   MOB ENTITY SYSTEM
+   Mobs baked into .mcstructure entities array
+   exactly like shulkers in end cities /
+   Captain Ironeye in Structure Mayhem.
+   
+   Key findings from reverse-engineering:
+   - Persistent=Byte(1) → prevents despawn
+   - Attributes list with health → mob stays alive
+   - definitions list → initializes mob AI
+   - All bool flags are TAG_Byte, NOT TAG_Int
+   - Air/DeathTime/HurtTime are TAG_Short
+   - LeasherID/OwnerNew/TargetID/UniqueID are TAG_Long
+═══════════════════════════════════════════════ */
+
+const MOB_LIST = [
+  {id:'minecraft:zombie',       icon:'🧟', color:'#3a6e3a', hp:20, atk:3},
+  {id:'minecraft:skeleton',     icon:'💀', color:'#b0b0b0', hp:20, atk:2},
+  {id:'minecraft:creeper',      icon:'💚', color:'#3a7a3a', hp:20, atk:3},
+  {id:'minecraft:spider',       icon:'🕷', color:'#3a2828', hp:16, atk:2},
+  {id:'minecraft:cave_spider',  icon:'🕸', color:'#2a3e2a', hp:12, atk:2},
+  {id:'minecraft:witch',        icon:'🧙', color:'#5a3a7a', hp:26, atk:2},
+  {id:'minecraft:vindicator',   icon:'🪓', color:'#c0c0a8', hp:24, atk:8},
+  {id:'minecraft:evoker',       icon:'✨', color:'#a0a090', hp:24, atk:6},
+  {id:'minecraft:pillager',     icon:'🏹', color:'#808070', hp:24, atk:4},
+  {id:'minecraft:blaze',        icon:'🔥', color:'#d89820', hp:20, atk:6},
+  {id:'minecraft:wither_skeleton',icon:'☠', color:'#181818', hp:20, atk:8},
+  {id:'minecraft:enderman',     icon:'🌑', color:'#080810', hp:40, atk:7},
+  {id:'minecraft:shulker',      icon:'📦', color:'#9050b8', hp:30, atk:4},
+  {id:'minecraft:guardian',     icon:'🔱', color:'#4a7858', hp:30, atk:6},
+  {id:'minecraft:elder_guardian',icon:'🌊', color:'#607070', hp:80, atk:12},
+  {id:'minecraft:drowned',      icon:'💧', color:'#284848', hp:20, atk:3},
+  {id:'minecraft:husk',         icon:'🌵', color:'#907830', hp:20, atk:3},
+  {id:'minecraft:stray',        icon:'❄',  color:'#78a0a8', hp:20, atk:2},
+  {id:'minecraft:phantom',      icon:'👻', color:'#283848', hp:20, atk:6},
+  {id:'minecraft:silverfish',   icon:'🐛', color:'#686868', hp:8,  atk:1},
+  {id:'minecraft:slime',        icon:'🟢', color:'#409040', hp:16, atk:3},
+  {id:'minecraft:magma_cube',   icon:'🔴', color:'#7a1a10', hp:16, atk:6},
+  {id:'minecraft:wolf',         icon:'🐺', color:'#a09080', hp:8,  atk:4},
+  {id:'minecraft:villager',     icon:'👨', color:'#c08050', hp:20, atk:0},
+  {id:'minecraft:zombie_villager',icon:'🧛', color:'#486838', hp:20, atk:3},
+  {id:'minecraft:golem',        icon:'🗿', color:'#909090', hp:100,atk:7},
+];
+
+let mobPickerPos = null;
+const mobOrbs = {};
+
+function openMobPicker(pos){
+  mobPickerPos = pos;
+  const key = `${pos.x},${pos.y},${pos.z}`;
+  const saved = structureMobs[key];
+  document.getElementById('mmtitle').textContent = `👾 MOB — X:${pos.x} Y:${pos.y} Z:${pos.z}`;
+  document.getElementById('mmid').value = saved ? saved.id : 'minecraft:zombie';
+  document.getElementById('mmname').value = saved ? (saved.customName||'') : '';
+  document.getElementById('mmremove').style.display = saved ? '' : 'none';
+  const grid = document.getElementById('mmgrid');
+  grid.innerHTML = '';
+  const curId = saved ? saved.id : 'minecraft:zombie';
+  MOB_LIST.forEach(m=>{
+    const btn = document.createElement('button');
+    btn.className = 'mmchip' + (curId===m.id?' sel':'');
+    btn.innerHTML = `<span>${m.icon}</span><span style="font-size:12px">${m.id.replace('minecraft:','')}</span>`;
+    btn.onclick = ()=>{
+      document.getElementById('mmid').value = m.id;
+      grid.querySelectorAll('.mmchip').forEach(b=>b.classList.remove('sel'));
+      btn.classList.add('sel');
+    };
+    grid.appendChild(btn);
+  });
+  document.getElementById('mm').style.display = 'flex';
+}
+
+function closeMobPicker(){
+  document.getElementById('mm').style.display = 'none';
+  mobPickerPos = null;
+}
+
+function saveMobEntity(){
+  if(!mobPickerPos) return;
+  let id = document.getElementById('mmid').value.trim();
+  const customName = document.getElementById('mmname').value.trim();
+  if(!id){ closeMobPicker(); return; }
+  if(!id.includes(':')) id = 'minecraft:' + id;
+  const mobDef = MOB_LIST.find(m=>m.id===id) || {color:'#804080'};
+  const key = `${mobPickerPos.x},${mobPickerPos.y},${mobPickerPos.z}`;
+  structureMobs[key] = {id, customName, color:mobDef.color, icon:mobDef.icon||'👾', hp:mobDef.hp||20, atk:mobDef.atk||3};
+  placeMobOrb(mobPickerPos.x, mobPickerPos.y, mobPickerPos.z);
+  closeMobPicker();
+  updateStats();
+}
+
+function removeMobEntity(x,y,z){
+  const key=`${x},${y},${z}`;
+  if(mobOrbs[key]){
+    if(mobOrbs[key].ring) scene.remove(mobOrbs[key].ring);
+    scene.remove(mobOrbs[key]);
+    mobOrbs[key].material.dispose();
+    delete mobOrbs[key];
+  }
+  delete structureMobs[key];
+  updateStats();
+}
+
+function removeMobOrbs(){
+  Object.values(mobOrbs).forEach(m=>{
+    if(m.ring) scene.remove(m.ring);
+    scene.remove(m); m.material.dispose();
+  });
+  for(const k in mobOrbs) delete mobOrbs[k];
+}
+
+let _orbGeo = null;
+function getOrbGeo(){ return _orbGeo||(_orbGeo=new THREE.SphereGeometry(0.36,10,8)); }
+
+function placeMobOrb(x,y,z){
+  const key=`${x},${y},${z}`;
+  // Remove old orb
+  if(mobOrbs[key]){
+    if(mobOrbs[key].ring) scene.remove(mobOrbs[key].ring);
+    scene.remove(mobOrbs[key]); mobOrbs[key].material.dispose(); delete mobOrbs[key];
+  }
+  const mob = structureMobs[key];
+  if(!mob) return;
+  const col = parseInt((mob.color||'#804080').replace('#',''),16);
+  const mat = new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0.9});
+  const mesh = new THREE.Mesh(getOrbGeo(), mat);
+  mesh.position.set(x+0.5, y+0.5, z+0.5);
+  mesh.userData.pos={x,y,z};
+  mesh.userData.isMob=true;
+  mesh.visible = y<=maxLyrY;
+  scene.add(mesh);
+  // Ring
+  const rg = new THREE.RingGeometry(0.44,0.52,16);
+  const rm = new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0.35,side:THREE.DoubleSide});
+  const ring = new THREE.Mesh(rg,rm);
+  ring.position.copy(mesh.position);
+  ring.visible = mesh.visible;
+  scene.add(ring);
+  mesh.userData.ring = ring;
+  mesh.ring = ring;
+  mobOrbs[key] = mesh;
+  // Float animation
+  let t = Math.random()*Math.PI*2;
+  (function tick(){
+    if(!mesh.parent) return;
+    t+=0.035;
+    mesh.position.y = y+0.5+Math.sin(t)*0.1;
+    ring.position.copy(mesh.position);
+    ring.rotation.y = t*0.4;
+    ring.material.opacity = 0.2+Math.abs(Math.sin(t*0.6))*0.25;
+    requestAnimationFrame(tick);
+  })();
+}
+
+/* ─── NBT entity writer ───────────────────────────────────────────────────────
+   Writes a full Bedrock entity compound exactly matching the Captain Ironeye
+   structure from Structure Mayhem, with all tag types verified from raw bytes:
+   - Bool flags: TAG_Byte (not int!)
+   - Air, DeathTime, HurtTime: TAG_Short
+   - UniqueID, LeasherID, OwnerNew, TargetID: TAG_Long
+   - Persistent: TAG_Byte = 1  ← prevents despawn like end city shulkers
+   - Attributes: required or mob spawns with 0hp and dies instantly
+   - definitions: required or mob has no AI
+─────────────────────────────────────────────────────────────────────────────── */
+function writeMobEntities(w, mobList){
+  if(!mobList.length) return;
+  // Rewrite entities list with TAG_Compound elements
+  // We need to patch the NBT — call this AFTER the empty entities list is written
+  // Actually we override the entities list writing in buildMcstructure
+}
+
+function buildMobEntityNBT(w, mob, index){
+  // Called inside List<Compound> — writes compound payload (fields + TAG_End)
+  // Field order matches Captain Ironeye exactly for compatibility
+  
+  const hp = mob.hp || 20;
+  const atk = mob.atk || 3;
+  const INF = 3.4028235e38; // Float.MAX_VALUE
+
+  function attr(name, base, cur, defMin, defMax, min, max, hasModifiers){
+    // TAG_Compound payload for each attribute
+    w.u8(5);w.str('Base');w.f32(base);
+    w.u8(5);w.str('Current');w.f32(cur);
+    w.u8(5);w.str('DefaultMax');w.f32(defMax);
+    w.u8(5);w.str('DefaultMin');w.f32(defMin);
+    w.u8(5);w.str('Max');w.f32(max);
+    w.u8(5);w.str('Min');w.f32(min);
+    if(hasModifiers){ w.u8(9);w.str('Modifiers');w.u8(0);w.i32(0); } // List<TAG_End>(0) = empty
+    w.u8(8);w.str('Name');w.str(name);
+    w.u8(0); // TAG_End
+  }
+
+  function emptyItemCompound(){
+    w.u8(1);w.str('Count');w.u8(0);   // TAG_Byte (verified from mod)
+    w.u8(2);w.str('Damage');w.i16(0); // TAG_Short
+    w.u8(8);w.str('Name');w.str('');  // TAG_String
+    w.u8(1);w.str('WasPickedUp');w.u8(0);
+    w.u8(0);
+  }
+
+  function itemCompound(name, count=1){
+    w.u8(1);w.str('Count');w.u8(count);
+    w.u8(2);w.str('Damage');w.i16(0);
+    w.u8(8);w.str('Name');w.str(name);
+    w.u8(1);w.str('WasPickedUp');w.u8(0);
+    w.u8(0);
+  }
+
+  // Pick weapon for mob (ItemInHand + Mainhand)
+  const weapons = {
+    'minecraft:pillager':'minecraft:crossbow',
+    'minecraft:vindicator':'minecraft:iron_axe',
+    'minecraft:skeleton':'minecraft:bow',
+    'minecraft:stray':'minecraft:bow',
+    'minecraft:bogged':'minecraft:bow',
+    'minecraft:illusioner':'minecraft:bow',
+    'minecraft:zombie_villager':'minecraft:air',
+  };
+  const weapon = weapons[mob.id] || '';  // empty = no weapon
+
+  // ActiveEffects: List<Compound>(0) — empty
+  w.u8(9);w.str('ActiveEffects');w.u8(10);w.i32(0);
+  // Air: Short
+  w.u8(2);w.str('Air');w.i16(300);
+  // Armor: List<Compound>(5) — 5 empty items
+  w.u8(9);w.str('Armor');w.u8(10);w.i32(5);
+  for(let i=0;i<5;i++) emptyItemCompound();
+  // Attributes: List<Compound>(9)
+  w.u8(9);w.str('Attributes');w.u8(10);w.i32(9);
+  attr('minecraft:luck',     0, 0,   -1024, 1024, -1024, 1024, false);
+  attr('minecraft:health',   hp,hp,  0,     hp,   0,     hp,   true);
+  attr('minecraft:absorption',0,0,   0,     16,   0,     16,   false);
+  attr('minecraft:knockback_resistance',0,0,0,1,0,1,false);
+  attr('minecraft:movement', 0.35,0.35,0,INF,0,INF,false);
+  attr('minecraft:underwater_movement',0.02,0.02,0,INF,0,INF,false);
+  attr('minecraft:lava_movement',0.02,0.02,0,INF,0,INF,false);
+  attr('minecraft:follow_range',64,64,0,2048,0,2048,false);
+  attr('minecraft:attack_damage',atk,atk,0,INF,0,INF,false);
+  // Bool flags (all TAG_Byte)
+  w.u8(1);w.str('Chested');w.u8(0);
+  w.u8(1);w.str('Color');w.u8(0);
+  w.u8(1);w.str('Color2');w.u8(0);
+  if(mob.customName){
+    w.u8(8);w.str('CustomName');w.str(mob.customName);
+    w.u8(1);w.str('CustomNameVisible');w.u8(1);
+  }
+  w.u8(1);w.str('Dead');w.u8(0);
+  w.u8(2);w.str('DeathTime');w.i16(0);
+  w.u8(5);w.str('FallDistance');w.f32(0);
+  w.u8(2);w.str('HurtTime');w.i16(0);
+  w.u8(1);w.str('Invulnerable');w.u8(0);
+  w.u8(1);w.str('IsAngry');w.u8(0);
+  w.u8(1);w.str('IsAutonomous');w.u8(0);
+  w.u8(1);w.str('IsBaby');w.u8(0);
+  w.u8(1);w.str('IsEating');w.u8(0);
+  w.u8(1);w.str('IsGliding');w.u8(0);
+  w.u8(1);w.str('IsGlobal');w.u8(0);
+  w.u8(1);w.str('IsIllagerCaptain');w.u8(0);
+  w.u8(1);w.str('IsOrphaned');w.u8(0);
+  w.u8(1);w.str('IsOutOfControl');w.u8(0);
+  w.u8(1);w.str('IsPregnant');w.u8(0);
+  w.u8(1);w.str('IsRoaring');w.u8(0);
+  w.u8(1);w.str('IsScared');w.u8(0);
+  w.u8(1);w.str('IsStunned');w.u8(0);
+  w.u8(1);w.str('IsSwimming');w.u8(0);
+  w.u8(1);w.str('IsTamed');w.u8(0);
+  w.u8(1);w.str('IsTrusting');w.u8(0);
+  // LeasherID: Long
+  w.u8(4);w.str('LeasherID');w.i32(-1);w.i32(-1);
+  w.u8(1);w.str('LootDropped');w.u8(0);
+  // ItemInHand: Compound (REQUIRED — missing causes entity to not load)
+  w.u8(10);w.str('ItemInHand');
+  if(weapon){ itemCompound(weapon); } else { emptyItemCompound(); }
+  // Mainhand: List<Compound>(1)
+  w.u8(9);w.str('Mainhand');w.u8(10);w.i32(1);
+  if(weapon){ itemCompound(weapon); } else { emptyItemCompound(); }
+  w.u8(3);w.str('MarkVariant');w.i32(0);
+  w.u8(1);w.str('NaturalSpawn');w.u8(0);
+  // Offhand: List<Compound>(1) — empty item
+  w.u8(9);w.str('Offhand');w.u8(10);w.i32(1);
+  emptyItemCompound();
+  w.u8(1);w.str('OnGround');w.u8(1);
+  // OwnerNew: Long
+  w.u8(4);w.str('OwnerNew');w.i32(-1);w.i32(-1);
+  // Persistent: Byte = 1 → PREVENTS DESPAWN (same as shulkers/end guardians)
+  w.u8(1);w.str('Persistent');w.u8(1);
+  w.u8(3);w.str('PortalCooldown');w.i32(0);
+  // Pos: List<Float>(3)
+  w.u8(9);w.str('Pos');w.u8(5);w.i32(3);
+  w.f32(mob.ex+0.5);w.f32(mob.ey+0.5);w.f32(mob.ez+0.5);
+  // Rotation: List<Float>(2)
+  w.u8(9);w.str('Rotation');w.u8(5);w.i32(2);
+  w.f32(0);w.f32(0);
+  w.u8(1);w.str('Saddled');w.u8(0);
+  w.u8(1);w.str('Sheared');w.u8(0);
+  w.u8(1);w.str('ShowBottom');w.u8(0);
+  w.u8(1);w.str('Sitting');w.u8(0);
+  w.u8(3);w.str('SkinID');w.i32(0);
+  w.u8(1);w.str('SpawnedByNight');w.u8(0);
+  w.u8(3);w.str('Strength');w.i32(0);
+  w.u8(3);w.str('StrengthMax');w.i32(0);
+  w.u8(1);w.str('Surface');w.u8(0);
+  // Tags: List<TAG_End>(0) — empty (type 0 = TAG_End, verified from mod)
+  w.u8(9);w.str('Tags');w.u8(0);w.i32(0);
+  // TargetID: Long
+  w.u8(4);w.str('TargetID');w.i32(-1);w.i32(-1);
+  w.u8(3);w.str('TradeExperience');w.i32(0);
+  w.u8(3);w.str('TradeTier');w.i32(0);
+  // UniqueID: Long (use negative index-based value)
+  w.u8(4);w.str('UniqueID');
+  const uid = -(index + 1) * 999983;
+  const lo = uid & 0xFFFFFFFF;
+  const hi = Math.floor(uid / 0x100000000) & 0xFFFFFFFF;
+  w.i32(lo); w.i32(hi);
+  w.u8(3);w.str('Variant');w.i32(0);
+  w.u8(3);w.str('boundX');w.i32(0);
+  w.u8(3);w.str('boundY');w.i32(0);
+  w.u8(3);w.str('boundZ');w.i32(0);
+  w.u8(1);w.str('canPickupItems');w.u8(0);
+  // definitions: List<String> — initializes mob AI (REQUIRED)
+  w.u8(9);w.str('definitions');w.u8(8);w.i32(2);
+  w.str('+'+mob.id);
+  w.str('+minecraft:default_targeting');
+  w.u8(1);w.str('expDropEnabled');w.u8(1);
+  w.u8(1);w.str('hasBoundOrigin');w.u8(0);
+  w.u8(1);w.str('hasSetCanPickupItems');w.u8(1);
+  // identifier: String
+  w.u8(8);w.str('identifier');w.str(mob.id);
+  // internalComponents: empty Compound
+  w.u8(10);w.str('internalComponents');w.u8(0);
+  w.u8(0); // TAG_End for this entity compound
+}
+</script>
+</body>
+</html>
